@@ -1,0 +1,139 @@
+{
+  "title": "The Weight of the Handle (የእጁ ሚስጥር)",
+  "story_summary": "A young highland apprentice exhausts himself attempting to break rocky soil with brute strength alone. His grandfather intervenes, demonstrating that balance and ancestral technique triumph over reckless force, embodying the ancient Ethiopian proverb: 'የማያውቁት ነገር ላብ ያበረክታል'.",
+  "language": "am",
+  "target_duration_s": 64.5,
+  "style_block": "Cinematic photorealistic 35mm film still, warm golden-hour side lighting, authentic Ethiopian highland rural setting, natural earthy tones (ochre, terracotta, weathered acacia wood, off-white handwoven cotton Gabi), subtle volumetric dust particles, shallow depth of field, 24fps film grain, highly detailed skin textures and fabric weaves, centered composition suitable for 9:16 and 16:9 crops, no modern artifacts.",
+  "music_cues": [
+    {
+      "cue_id": "cue_01_struggle",
+      "start_s": 0.0,
+      "end_s": 28.0,
+      "bpm": 76,
+      "key": "D minor",
+      "mood": "Straining, tense, dry acoustic tension with rhythmic urgency",
+      "instruments": "Solo Krar in Tizita minor tuning, muted Kebero hand drum, dry atmospheric shaker",
+      "caption": "instrumental, traditional Ethiopian acoustic krar and muted kebero percussion, tense rhythmic labor, slow buildup"
+    },
+    {
+      "cue_id": "cue_02_wisdom",
+      "start_s": 26.0,
+      "end_s": 64.5,
+      "bpm": 82,
+      "key": "G major",
+      "mood": "Warm, serene, resonant ancestral peace and harmonic release",
+      "instruments": "Melodic Washint bamboo flute, resonant acoustic Begena harp, warm cello swell, ambient highland breeze",
+      "caption": "instrumental, contemplative Ethiopian washint bamboo flute, warm begena harp resonance, uplifting emotional resolution"
+    }
+  ],
+  "shots": [
+    {
+      "shot_id": "shot_01",
+      "reason": "Establishes the harsh, unforgiving physical setting and the scale of the young farmer's labor under the midday sun.",
+      "duration_s": 7.0,
+      "shot_type": "wide",
+      "character_refs": ["kaleb"],
+      "keyframe_prompt": "Wide cinematic shot of an Ethiopian highland agricultural landscape at midday, rolling terraced ochre hills under a bright sun, a solitary young Ethiopian farmer visible in the midground field surrounded by dry stones and acacia trees.",
+      "motion_prompt": "Slow aerial push-in, subtle heat haze shimmering over the dry stone field, slight rustle of acacia leaves.",
+      "seed": 40129,
+      "narration_text": "ፀሐይ በደጋው ምድር ላይ ስትግል፣ የካሌብ ትግል ከማለዳው ጀምሮ ነበር።",
+      "music_cue_id": "cue_01_struggle"
+    },
+    {
+      "shot_id": "shot_02",
+      "reason": "Demonstrates Kaleb's frantic, aggressive reliance on brute physical strength without technique.",
+      "duration_s": 7.5,
+      "shot_type": "medium",
+      "character_refs": ["kaleb"],
+      "keyframe_prompt": "Medium dynamic shot of Kaleb, a 17-year-old Ethiopian youth with sweat glistening on his forehead, muscles tensed, raising a heavy iron pickaxe with both hands in violent exertion against dry packed ground.",
+      "motion_prompt": "Rapid downward strike of the tool bouncing rigidly off rocky earth with a puff of dust, camera handheld shake on impact.",
+      "seed": 40130,
+      "narration_text": "በጉልበቱ ብቻ ድንጋያማውን መሬት ለመስበር ይፍጨረጨራል፤ ግን መሬቱ አልተሸነፈም።",
+      "music_cue_id": "cue_01_struggle"
+    },
+    {
+      "shot_id": "shot_03",
+      "reason": "Emphasizes the painful physical consequence and futility of unguided struggle through intense macro detail.",
+      "duration_s": 6.5,
+      "shot_type": "close_up",
+      "character_refs": ["kaleb"],
+      "keyframe_prompt": "Macro close-up shot of young Ethiopian hands trembling around a cracked wooden tool handle, blistered palms, sweat and dust caked into skin creases, shallow depth of field.",
+      "motion_prompt": "Micro-tremor of fatigued fingers loosening grip, single bead of sweat rolling down the wrist, static camera.",
+      "seed": 40131,
+      "narration_text": "እጆቹ ቆስለዋል፤ ትንፋሹም ቁርጥራጭ ሆኗል። ጉልበት ብቻውን መንገድ አላገኘም።",
+      "music_cue_id": "cue_01_struggle"
+    },
+    {
+      "shot_id": "shot_04",
+      "reason": "Delivers the core proverb at the peak of Kaleb's despair as he collapses in exhaustion.",
+      "duration_s": 7.0,
+      "shot_type": "medium",
+      "character_refs": ["kaleb"],
+      "keyframe_prompt": "Medium shot of Kaleb sinking to his knees in the furrowed soil, chest heaving, head bowed down in complete exhaustion with the tool discarded beside him, dramatic golden backlight.",
+      "motion_prompt": "Slow gentle downward pedestal movement, rising dust settling around his knees, heavy rhythmic breathing visible in his shoulders.",
+      "seed": 40132,
+      "narration_text": "አበው ሲተርቱ፡ “የማያውቁት ነገር ላብ ያበረክታል” ይላሉ።",
+      "music_cue_id": "cue_01_struggle"
+    },
+    {
+      "shot_id": "shot_05",
+      "reason": "Introduces the grandfather as an embodiment of calm, patient ancestral presence.",
+      "duration_s": 6.5,
+      "shot_type": "medium",
+      "character_refs": ["ato_berhanu"],
+      "keyframe_prompt": "Medium eye-level shot of Ato Berhanu, a 70-year-old Ethiopian elder with silver-gray beard and compassionate eyes, wrapped in a traditional textured white handwoven cotton Gabi, standing at the edge of the field.",
+      "motion_prompt": "Slow steady forward tracking shot as the elder steps deliberately toward the kneeling youth, soft breeze moving his Gabi fringe.",
+      "seed": 40133,
+      "narration_text": "አረጋዊው አያቱ በዝምታ ተመልክተው ወደ እርሱ ቀረቡ።",
+      "music_cue_id": "cue_02_wisdom"
+    },
+    {
+      "shot_id": "shot_06",
+      "reason": "Captures the precise moment of teaching: the physical transmission of balance and leverage over raw force.",
+      "duration_s": 7.5,
+      "shot_type": "close_up",
+      "character_refs": ["ato_berhanu", "kaleb"],
+      "keyframe_prompt": "Close-up of weathered, experienced elder hands gently covering and repositioning Kaleb's tense young hands along the wooden handle, demonstrating balanced hand placement.",
+      "motion_prompt": "Delicate sliding motion of hands adjusting the pivot point along the handle, calm unhurried movement, shallow focus.",
+      "seed": 40134,
+      "narration_text": "“ልጄ ሆይ፣ ሚስጥሩ በክንድህ ሳይሆን በሚዛኑ ነው” አሉት።",
+      "music_cue_id": "cue_02_wisdom"
+    },
+    {
+      "shot_id": "shot_07",
+      "reason": "Proves the efficacy of wisdom: the elder effortlessly demonstrates the stroke with fluid grace.",
+      "duration_s": 7.0,
+      "shot_type": "medium",
+      "character_refs": ["ato_berhanu"],
+      "keyframe_prompt": "Medium cinematic shot of the elder swinging the pickaxe with smooth, effortless posture, body relaxed, the blade cleaving smoothly through the soil with perfect arc and gravity.",
+      "motion_prompt": "Fluid arcing camera movement following the natural swing of the blade, deep rich soil turning over smoothly with zero recoil.",
+      "seed": 40135,
+      "narration_text": "በእርጋታና በጥበብ የተነሳው መጥረቢያ፣ መሬቱን እንደ ቅቤ ሰነጠቀው።",
+      "music_cue_id": "cue_02_wisdom"
+    },
+    {
+      "shot_id": "shot_08",
+      "reason": "Shows Kaleb putting the lesson into practice, achieving effortless rhythm and joyful comprehension.",
+      "duration_s": 8.0,
+      "shot_type": "medium",
+      "character_refs": ["kaleb"],
+      "keyframe_prompt": "Medium shot of Kaleb standing upright, swinging the tool with relaxed grace and a subtle smile of realization, the earth parting easily beneath his measured strike.",
+      "motion_prompt": "Smooth rhythmic pan tracking Kaleb's balanced swing, golden evening light catching the furrow of clean plowed earth.",
+      "seed": 40136,
+      "narration_text": "ካሌብ ሚስጥሩን አወቀው፤ የድካም ቀንበር በጥበብ ብርሃን ተቀለለ።",
+      "music_cue_id": "cue_02_wisdom"
+    },
+    {
+      "shot_id": "shot_09",
+      "reason": "Concludes the film with cultural warmth, emotional resolution, and philosophical closure.",
+      "duration_s": 7.5,
+      "shot_type": "wide",
+      "character_refs": ["ato_berhanu", "kaleb"],
+      "keyframe_prompt": "Wide sunset landscape shot of the Ethiopian plateau, grandfather and grandson walking side by side along the plowed field path toward the homestead, warm amber sky and long shadows.",
+      "motion_prompt": "Slow graceful pull-back and crane up into the golden sunset sky as the two silhouettes walk together.",
+      "seed": 40137,
+      "narration_text": "ጥበብ ድካምን ያቃልላል፤ እውቀትም ጉልበትን ክብር ያጎናጽፈዋል።",
+      "music_cue_id": "cue_02_wisdom"
+    }
+  ]
+}
