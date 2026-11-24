@@ -63,18 +63,22 @@ def log_run(stage: str, model: str, params: dict, latency_s: float, status: str,
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def generate_tts_gemini(text: str, output_wav: Path, api_key: str, voice_name: str = "Puck", max_retries: int = 3) -> tuple[bool, float]:
+def generate_tts_gemini(text: str, output_wav: Path, api_key: str, voice_name: str = "Puck", max_retries: int = 3) -> tuple[bool, float, str]:
     """
-    Call Gemini Speech Generation / Flash TTS endpoint using dedicated gemini-3.8-flash-tts.
-    Includes exponential backoff and rate-limit recovery for 429 and 503 responses.
+    Call Gemini Speech Generation / Flash TTS endpoint.
+    Cascades through fallback models: gemini-3.8-flash-tts -> gemini-3.8-flash-lite-tts -> gemini-2.5-flash-preview-tts.
     """
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-tts:generateContent?key={api_key}"
+    candidate_models = [
+        "gemini-3.8-flash-tts",
+        "gemini-3.8-flash-lite-tts",
+        "gemini-2.5-flash-preview-tts"
+    ]
     headers = {"Content-Type": "application/json"}
     payload = {
         "contents": [
             {
                 "parts": [
-                    {"text": f"Read the following Amharic text aloud with calm, unhurried elder pacing:\n\n{text}"}
+                    {"text": text}
                 ]
             }
         ],
@@ -91,49 +95,55 @@ def generate_tts_gemini(text: str, output_wav: Path, api_key: str, voice_name: s
     }
 
     total_latency = 0.0
-    for attempt in range(1, max_retries + 1):
-        start_time = time.time()
-        try:
-            resp = requests.post(url, headers=headers, json=payload, timeout=60)
-            latency = time.time() - start_time
-            total_latency += latency
+    for model_name in candidate_models:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+        for attempt in range(1, max_retries + 1):
+            start_time = time.time()
+            try:
+                resp = requests.post(url, headers=headers, json=payload, timeout=60)
+                latency = time.time() - start_time
+                total_latency += latency
 
-            if resp.status_code == 200:
-                data = resp.json()
-                candidates = data.get("candidates", [])
-                if candidates:
-                    parts = candidates[0].get("content", {}).get("parts", [])
-                    for part in parts:
-                        if "inlineData" in part and part["inlineData"].get("mimeType", "").startswith("audio/"):
-                            import base64
-                            raw_audio = base64.b64decode(part["inlineData"]["data"])
-                            with open(output_wav, "wb") as f:
-                                f.write(raw_audio)
-                            return True, total_latency
-                print(f"[WARN] No audio bytes returned in response: {data}", file=sys.stderr)
-                return False, total_latency
+                if resp.status_code == 200:
+                    data = resp.json()
+                    candidates = data.get("candidates", [])
+                    if candidates:
+                        parts = candidates[0].get("content", {}).get("parts", [])
+                        for part in parts:
+                            if "inlineData" in part and part["inlineData"].get("mimeType", "").startswith("audio/"):
+                                import base64
+                                raw_audio = base64.b64decode(part["inlineData"]["data"])
+                                with open(output_wav, "wb") as f:
+                                    f.write(raw_audio)
+                                return True, total_latency, model_name
+                    print(f"[WARN] No audio bytes returned in response: {data}", file=sys.stderr)
+                    break
 
-            elif resp.status_code == 429:
-                wait_sec = 26  # Free tier allows 5 RPM (~1 req every 12-25s)
-                print(f"[WARN] Hit 429 Rate Limit on attempt {attempt}/{max_retries}. Backing off {wait_sec}s...", file=sys.stderr)
-                time.sleep(wait_sec)
+                elif resp.status_code == 429:
+                    err_msg = resp.text
+                    if "per day limit exceeded" in err_msg or "daily" in err_msg.lower():
+                        print(f"[WARN] Model {model_name} exceeded daily quota. Falling back to next model...", file=sys.stderr)
+                        break  # Fall back immediately to next candidate model
+                    wait_sec = 15
+                    print(f"[WARN] {model_name} rate limit on attempt {attempt}/{max_retries}. Backing off {wait_sec}s...", file=sys.stderr)
+                    time.sleep(wait_sec)
 
-            elif resp.status_code == 503:
-                wait_sec = attempt * 8
-                print(f"[WARN] Hit 503 Service Unavailable on attempt {attempt}/{max_retries}. Retrying in {wait_sec}s...", file=sys.stderr)
-                time.sleep(wait_sec)
+                elif resp.status_code == 503:
+                    wait_sec = attempt * 5
+                    print(f"[WARN] {model_name} 503 unavailable. Retrying in {wait_sec}s...", file=sys.stderr)
+                    time.sleep(wait_sec)
 
-            else:
-                print(f"[ERROR] Gemini TTS failed HTTP {resp.status_code}: {resp.text}", file=sys.stderr)
-                return False, total_latency
+                else:
+                    print(f"[ERROR] {model_name} failed HTTP {resp.status_code}: {resp.text}", file=sys.stderr)
+                    break
 
-        except Exception as e:
-            latency = time.time() - start_time
-            total_latency += latency
-            print(f"[ERROR] Exception calling Gemini TTS (attempt {attempt}): {e}", file=sys.stderr)
-            time.sleep(5)
+            except Exception as e:
+                latency = time.time() - start_time
+                total_latency += latency
+                print(f"[ERROR] Exception calling {model_name}: {e}", file=sys.stderr)
+                time.sleep(3)
 
-    return False, total_latency
+    return False, total_latency, ""
 
 
 def run_narration_pipeline(force: bool = False) -> bool:
@@ -176,23 +186,23 @@ def run_narration_pipeline(force: bool = False) -> bool:
                 continue
 
         print(f"  [GENERATING] {shot_id}: '{text}'...")
-        success, latency = generate_tts_gemini(text, out_file, api_key, voice_name=voice_name)
+        success, latency, used_model = generate_tts_gemini(text, out_file, api_key, voice_name=voice_name)
 
         if success:
             with open(hash_file, "w", encoding="utf-8") as hf:
                 hf.write(content_hash)
             dur = get_audio_duration_seconds(out_file)
-            print(f"  [OK] {shot_id} -> {out_file.name} (latency: {latency:.2f}s, duration: {dur}s)")
+            print(f"  [OK] {shot_id} -> {out_file.name} (model: {used_model}, latency: {latency:.2f}s, duration: {dur}s)")
             log_run(
                 stage="narration",
-                model="gemini-3.8-flash-tts",
+                model=used_model,
                 params={"voice": voice_name, "language": "am"},
                 latency_s=latency,
                 status="success",
                 details={"shot_id": shot_id, "text": text, "duration_s": dur}
             )
             # Polite pacing between generation calls
-            time.sleep(4)
+            time.sleep(12)
         else:
             all_success = False
             log_run(

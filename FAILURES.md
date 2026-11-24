@@ -23,3 +23,20 @@ Documenting blockers, root cause investigations, attempted fixes, and final veri
   - Enforced SHA-256 content hashing (`narration_{shot_id}.hash`). Completed audio files are permanently cached to disk, ensuring zero redundant quota burn on subsequent pipeline executions.
 
 ---
+
+### Failure 02: Prompt Leakage into TTS Audio Output (Meta-Instruction Spoken Verbatim)
+- **Timestamp:** 2026-11-24 18:28 EAT
+- **Stage / Subsystem:** `pipeline/narration.py` (Gemini 3.8 Flash TTS)
+- **Error / Blocker Description:**
+  Generated narration audio stems included spoken English instructions (*"Read the following Amharic text aloud with calm, unhurried elder pacing..."*) preceding the Amharic story lines in both general narration and character dialogue.
+- **Root Cause Analysis:**
+  Unlike LLM chat endpoints that separate meta-instructions from content, the `gemini-3.8-flash-tts` model synthesizes the raw string contents of `contents.parts[0].text` verbatim into speech. Formatting prompt instructions in that field causes the voice synthesizer to read the instruction aloud as dialogue.
+- **Attempts Made:**
+  - *Identified:* Line 77 had string template `f"Read the following Amharic text aloud...:\n\n{text}"`.
+- **Final Resolution / Workaround:**
+  - Cleaned the payload to pass only the pure target Amharic string: `{"text": text}`.
+  - Re-executed generation with `--force` to overwrite contaminated audio stems with clean native speech.
+- **Preventative Measure:**
+  - Codified rule: For dedicated TTS endpoints, never embed meta-instructions inside the text payload field; pass strictly the target spoken script.
+
+---
