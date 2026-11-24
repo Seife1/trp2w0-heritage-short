@@ -8,13 +8,13 @@ All model calls are logged per-execution in `runs.jsonl`. This document summariz
 
 | Pipeline Stage | Engine / Model | Hardware | Avg Latency / Item | Total Units | Total Time / GPU Min | Cost Equivalent (USD) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Script & Storyboard** | Gemini 3.8 Flash | Cloud API | ~2.5s | 1 call | N/A | $0.00 (Free Tier) |
-| **Narration (TTS)** | Gemini 3.8 Flash TTS | Cloud API | ~1.8s / line | 8–12 lines | N/A | $0.00 (Free Tier) |
-| **Keyframes** | FLUX.2 klein / schnell | Cloudflare AI | ~3.5s / img | 8–12 images | N/A | $0.00 (Daily Free Allowance) |
-| **Moving Shots** | Wan 2.2 TI2V-5B | Kaggle 2x T4 | ~120s / shot | 8–12 shots | ~20 GPU min | $0.00 (Weekly Free Quota) |
-| **Music Score** | ACE-Step 1.5 | Kaggle 2x T4 | ~45s / track | 3 candidates | ~2.5 GPU min | $0.00 (Weekly Free Quota) |
-| **Assembly & Master** | FFmpeg | Local CPU | ~15s | 2 renders | N/A | Local Compute |
-| **TOTAL** | | | | | **~25 GPU min** | **$0.00 Actual Cost** |
+| **Script & Storyboard** | Gemini 3.8 Flash | Cloud API | ~2.5s | 1 contract | N/A | $0.00 (Free Tier) |
+| **Narration (TTS)** | Gemini 3.8 Flash TTS | Cloud API | 7.3s / line | 9 audio stems | ~66.0s API time | $0.00 (Free Tier) |
+| **Radio Cut Assembly** | FFmpeg 8.0 | Local CPU (i7) | 27.3s total | 1 render | N/A | Local Compute |
+| **Keyframes** | FLUX.2 klein / schnell | Cloudflare AI | Pending | 9 images | Pending | $0.00 (Daily Free Allowance) |
+| **Moving Shots** | Wan 2.2 TI2V-5B | Kaggle 2x T4 | Pending | 9 shots | Pending | $0.00 (Weekly Free Quota) |
+| **Music Score** | ACE-Step 1.5 | Kaggle 2x T4 | Pending | 3 candidates | Pending | $0.00 (Weekly Free Quota) |
+| **Final Assembly** | FFmpeg | Local CPU | Pending | 2 renders | N/A | Local Compute |
 
 ---
 
