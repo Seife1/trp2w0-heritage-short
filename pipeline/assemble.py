@@ -26,11 +26,12 @@ def generate_temp_drone_score(output_path: Path, duration_s: float):
     Generate an acoustic drone / temp score via FFmpeg sine & lowpass filters
     if external score track is not yet provided.
     """
+    st_out = max(0.0, duration_s - 2.0)
     cmd = [
         "ffmpeg", "-y",
         "-f", "lavfi",
         "-i", f"sine=frequency=110:duration={duration_s}",
-        "-af", "volume=0.08,lowpass=f=250,afade=t=in:ss=0:d=2,afade=t=out:st={duration_s-2}:d=2",
+        "-af", f"volume=0.08,lowpass=f=250,afade=t=in:ss=0:d=2,afade=t=out:st={st_out:.2f}:d=2",
         str(output_path)
     ]
     subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
@@ -91,7 +92,8 @@ def build_radio_cut() -> bool:
     # Complex filter:
     # - Black video generator 1080x1920 at 24fps
     # - Sidechain compression: score ducked beneath narration
-    # - Drawtitle text stating "RADIO CUT - CHECKPOINT 1"
+    # - Drawtext stating "RADIO CUT - CHECKPOINT 1" using Windows Nyala font
+    font_path = "C\\:/Windows/Fonts/nyala.ttf"
     ffmpeg_cmd = [
         "ffmpeg", "-y",
         "-f", "lavfi", "-i", f"color=c=black:s=1080x1920:r=24:d={total_duration}",
@@ -100,9 +102,9 @@ def build_radio_cut() -> bool:
         "-filter_complex",
         "[2:a][1:a]sidechaincompress=threshold=0.03:ratio=5:attack=200:release=1200[ducked_score];"
         "[1:a][ducked_score]amix=inputs=2:weights=1.0 0.25:normalize=0[mixed_audio];"
-        "[0:v]drawtext=text='RADIO CUT (CHECKPOINT 1)':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=h/3,"
-        "drawtext=text='የማያውቁት ነገር ላብ ያበረክታል':fontcolor=gold:fontsize=42:x=(w-text_w)/2:y=h/2,"
-        "drawtext=text='Audio & Pacing Validation Cut':fontcolor=gray:fontsize=32:x=(w-text_w)/2:y=(h/2)+60[outv]",
+        f"[0:v]drawtext=fontfile='{font_path}':text='RADIO CUT (CHECKPOINT 1)':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=h/3,"
+        f"drawtext=fontfile='{font_path}':text='የማያውቁት ነገር ላብ ያበረክታል':fontcolor=gold:fontsize=52:x=(w-text_w)/2:y=h/2,"
+        f"drawtext=fontfile='{font_path}':text='Audio & Pacing Validation Cut':fontcolor=gray:fontsize=32:x=(w-text_w)/2:y=(h/2)+70[outv]",
         "-map", "[outv]",
         "-map", "[mixed_audio]",
         "-c:v", "libx264", "-pix_fmt", "yuv420p",

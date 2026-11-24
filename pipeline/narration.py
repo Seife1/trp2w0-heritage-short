@@ -65,10 +65,10 @@ def log_run(stage: str, model: str, params: dict, latency_s: float, status: str,
 
 def generate_tts_gemini(text: str, output_wav: Path, api_key: str, voice_name: str = "Puck", max_retries: int = 3) -> tuple[bool, float]:
     """
-    Call Gemini Speech Generation / Flash TTS endpoint using gemini-3.8-flash.
+    Call Gemini Speech Generation / Flash TTS endpoint using dedicated gemini-3.8-flash-tts.
     Includes exponential backoff and rate-limit recovery for 429 and 503 responses.
     """
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-tts:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     payload = {
         "contents": [
@@ -191,8 +191,8 @@ def run_narration_pipeline(force: bool = False) -> bool:
                 status="success",
                 details={"shot_id": shot_id, "text": text, "duration_s": dur}
             )
-            # Polite pacing to stay under 5 RPM Free Tier ceiling
-            time.sleep(12)
+            # Polite pacing between generation calls
+            time.sleep(4)
         else:
             all_success = False
             log_run(
