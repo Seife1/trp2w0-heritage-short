@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StoryboardSchema",
+  "description": "Validation schema for The Heritage Short storyboard contract.",
+  "type": "object",
+  "required": [
+    "title",
+    "target_duration_s",
+    "language",
+    "style_block",
+    "music_cues",
+    "shots"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "story_summary": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string",
+      "default": "en"
+    },
+    "target_duration_s": {
+      "type": "number",
+      "minimum": 60,
+      "maximum": 90
+    },
+    "style_block": {
+      "type": "string",
+      "description": "Fixed visual style block appended verbatim to all keyframe prompts.",
+      "minLength": 10
+    },
+    "music_cues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cue_id", "start_s", "end_s", "bpm", "key", "mood", "instruments"],
+        "properties": {
+          "cue_id": { "type": "string" },
+          "start_s": { "type": "number", "minimum": 0 },
+          "end_s": { "type": "number", "minimum": 0 },
+          "bpm": { "type": "integer", "minimum": 40, "maximum": 240 },
+          "key": { "type": "string" },
+          "mood": { "type": "string" },
+          "instruments": { "type": "string" },
+          "caption": { "type": "string" }
+        }
+      }
+    },
+    "shots": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 15,
+      "items": {
+        "type": "object",
+        "required": [
+          "shot_id",
+          "reason",
+          "duration_s",
+          "shot_type",
+          "character_refs",
+          "keyframe_prompt",
+          "motion_prompt",
+          "seed",
+          "narration_text",
+          "music_cue_id"
+        ],
+        "properties": {
+          "shot_id": {
+            "type": "string",
+            "pattern": "^shot_[0-9]{2}$"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Specific narrative or emotional reason why this shot exists.",
+            "minLength": 10
+          },
+          "duration_s": {
+            "type": "number",
+            "minimum": 3.0,
+            "maximum": 12.0
+          },
+          "shot_type": {
+            "type": "string",
+            "enum": ["extreme_wide", "wide", "medium", "close_up", "extreme_close_up", "point_of_view"]
+          },
+          "character_refs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "keyframe_prompt": {
+            "type": "string",
+            "minLength": 10
+          },
+          "motion_prompt": {
+            "type": "string",
+            "description": "Motion and camera cues only; no redundant subject descriptions.",
+            "minLength": 5
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "narration_text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "music_cue_id": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
