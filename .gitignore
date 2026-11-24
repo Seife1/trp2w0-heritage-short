@@ -1,0 +1,30 @@
+# Environment variables and secrets
+.env
+*.env
+.env.local
+
+# Outputs and generated media (do not commit heavy media to GitHub)
+outputs/
+*.mp4
+*.wav
+*.mp3
+*.png
+*.jpg
+*.jpeg
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# CodeGraph and local agent scratch
+.codegraph/
