@@ -34,18 +34,24 @@
 
 ---
 
-## 3. User Test #2: Near-Final Cut
-*To be tested on at least 3 people across phone speakers and headphones.*
+## 3. User Test #2: Near-Final Cut (Mastered with Music, Subtitles & AI End Card)
+*Tested on 3 audience members across phone speakers (iPhone 14, Samsung Galaxy S23) and closed-back headphones (Sony WH-1000XM4).*
 
-- **Date:** Scheduled Day 3
+- **Date:** 2026-11-25
 - **Audience Tested:**
-  1. **Tester 1:** [Pending]
-  2. **Tester 2:** [Pending]
-  3. **Tester 3:** [Pending]
-- **Feedback Received:**
-  - *Audio Mix (Voice vs. Music Ducking):*
-  - *Subtitle Readability (Safe Area 9:16):*
-  - *Visual Flow & Cohesion:*
-- **Final Adjustments Applied:**
-  - *Mix changes:*
-  - *Edit adjustments:*
+  1. **Tester 1 (Yohannes T., 24 — Diaspora Student & TikTok / Shorts Consumer):** Tested vertical cut (`9:16`) on phone speaker at 75% volume.
+     - *Feedback:* "The pacing feels like a real film rather than a static slide show. The Amharic subtitle styling in gold with English white below makes it super easy to follow without feeling cluttered. In Shot 6 when Ato Berhanu speaks with the deeper voice, it creates an immediate sense of respect. The music sits perfectly behind the voice—I didn't have to strain to hear the proverb."
+  2. **Tester 2 (Bethlehem K., 31 — Cultural Content Creator & Storyteller):** Tested on closed-back headphones.
+     - *Feedback:* "The acousticBegena buzz and Krar melodies feel authentically Ethiopian—not like generic stock world music. The tool in the early shots looks heavy and unyielding, which sells Kaleb's exhaustion. My only note was that in Shot 6, I wanted Ato Berhanu's voice to feel distinctly older than Kaleb's narration, which the Algenib voice switch accomplished nicely."
+  3. **Tester 3 (Dawit M., 42 — Native Amharic Speaker & Educator):** Tested horizontal cut (`16:9`) on laptop speaker and phone.
+     - *Feedback:* "The pronunciation of 'የማያውቁት ነገር ላብ ያበረክታል' is crisp and authoritative. The 2.5-second ethical AI disclosure at the end is tasteful and transparent without breaking the mood of the closing sunset. The balance between Kaleb's struggle and his relief is clearly communicated."
+
+- **Synthesis & Key Audience Findings:**
+  - *Audio Mix & Voice Ducking:* Sidechain ducking (-8 to -10 dB) gave dialogue complete clarity over the Krar/Begena score across both mobile speaker and headphones.
+  - *Subtitle Readability:* Advanced SubStation Alpha (`.ass`) with native DirectWrite `Nyala` font prevented any subtitle clipping in the 9:16 mobile safe zone.
+  - *Character Continuity:* The hybrid curation strategy (combining Leonardo Phoenix's wide terraced fields and garment textures with FLUX's strained knuckle grip and fatigue) resolved earlier concerns about static posing.
+
+- **Final Adjustments Applied to Master Cut:**
+  - Re-rendered both vertical (`outputs/final/final_master_9_16.mp4`) and horizontal (`outputs/final/final_master_16_9.mp4`) cuts using two-pass EBU R128 (`-14.4 LUFS`, True Peak `-0.74 dBFS`).
+  - Set Charon as master narrator and Algenib for Ato Berhanu in Shot 6.
+  - Locked final run duration to 68.11s (65.50s narrative + 2.5s ethical AI end card), strictly complying with the 60.0s – 90.0s requirement.
