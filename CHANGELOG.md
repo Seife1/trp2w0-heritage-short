@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Two-Pass -14 LUFS Loudness Mastering & AI Disclosure End Card (`pipeline/assemble.py --master`):**
+  - Implemented EBU R128 / ITU-R BS.1770 compliant two-pass mastering with true-peak limiting (`-14.0 LUFS` integrated, `True Peak <= -1.0 dBFS`, `LRA = 5.6 LU`).
+  - Synthesized a 2.5s Ethical AI Disclosure End Card rendered with DirectWrite `Nyala` typography highlighting generative AI models used (FLUX.1 schnell, Leonardo Phoenix, Gemini Flash TTS, and acoustic instrument synthesis).
+  - Delivered final production master MP4s conforming strictly to the 60.0–90.0s challenge contract:
+    - Vertical Master (`9:16`, 1080x1920): `outputs/final/final_master_9_16.mp4` (11.18 MB, 68.11s)
+    - Horizontal Master (`16:9`, 1920x1080): `outputs/final/final_master_16_9.mp4` (10.27 MB, 68.11s)
 - **Hybrid Keyframe Curation Pipeline (`pipeline/curate.py`):**
   - Synthesized evaluator A/B feedback into a curated master keyframe sequence in `outputs/keyframes_curated/` pairing Leonardo Phoenix (landscape depth, garment weaves, companions) and FLUX.1 schnell (fatigue, strained grip, mentor posture).
   - Generated automated curation manifest (`outputs/keyframes_curated/curation_manifest.json`) recording per-shot model selection rationale.

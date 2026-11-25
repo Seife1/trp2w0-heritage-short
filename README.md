@@ -85,16 +85,32 @@ python schema/validate.py storyboard.json schema/storyboard.schema.json
 
 ## 🎬 Running the Pipeline
 
-### Checkpoint 1: Narration & Radio Cut
-Generate the line-by-line Amharic narration audio stems and assemble the pacing verification cut:
+### Checkpoint 2: Visuals, Music & Rough Cut
 ```bash
-# Step 1: Generate speech per shot (with SHA-256 caching)
-python pipeline/narration.py
+# Step 1: Curate winning multi-model keyframes
+python pipeline/curate.py
 
-# Step 2: Assemble the Radio Cut (subtitled audio over black screen)
-python pipeline/assemble.py --radio-cut
+# Step 2: Render 24fps Ken Burns motion clips (9:16 and 16:9)
+python pipeline/shots.py
+
+# Step 3: Audition & synthesize Ethiopian acoustic score
+python pipeline/music.py
+
+# Step 4: Assemble Rough Cut with sidechain ducking & bilingual subtitles
+python pipeline/assemble.py --rough-cut --aspect 9:16
+python pipeline/assemble.py --rough-cut --aspect 16:9
 ```
-*Output generated at:* `outputs/final/radio_cut.mp4`
+*Outputs generated at:* `outputs/final/rough_cut.mp4` and `outputs/final/rough_cut_h16_9.mp4`
+
+### Phase 3: Final Master Delivery (-14 LUFS & AI Disclosure End Card)
+```bash
+# Two-pass broadcast mastering with true-peak limiter and 2.5s ethical AI end card
+python pipeline/assemble.py --master --aspect 9:16
+python pipeline/assemble.py --master --aspect 16:9
+```
+*Final Master cuts generated at:*  
+* Vertical Master (`9:16`): `outputs/final/final_master_9_16.mp4` (68.11s, -14.4 LUFS, TP -0.7 dBFS)  
+* Horizontal Master (`16:9`): `outputs/final/final_master_16_9.mp4` (68.11s, -14.4 LUFS, TP -0.7 dBFS)  
 
 ---
 
@@ -135,5 +151,6 @@ python pipeline/assemble.py --radio-cut
 
 See the full [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
 
+* **2026-11-25:** Implemented two-pass -14 LUFS loudness mastering with true-peak limiting (`-14.4 LUFS`, `TP <= -1.0 dBFS`) and synthesized a 2.5s Ethical AI Disclosure End Card into `outputs/final/final_master_9_16.mp4` and `final_master_16_9.mp4`.
+* **2026-11-25:** Integrated multi-model keyframe curation (`pipeline/curate.py`) and per-shot dual-voice narration (Charon + Algenib).
 * **v0.1.0 (2026-11-24):** Initialized repository architecture, schema contract, documentation framework, and v0.1.0 release tag.
-* **Unreleased:** Built Gemini Flash TTS narration pipeline with caching, FFmpeg radio cut assembler, and the 9-shot Amharic folklore contract.

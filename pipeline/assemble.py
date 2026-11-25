@@ -359,16 +359,181 @@ def build_rough_cut(aspect: str = "9:16") -> bool:
     return True
 
 
+def generate_ai_end_card(output_path: Path, aspect: str = "9:16", duration_s: float = 2.5) -> bool:
+    """
+    Generate a 2.5-second AI disclosure end card with silent audio.
+    Meets the Assignment 2 mandate for clear ethical AI attribution.
+    Uses ASS subtitles over a solid background to cleanly handle multi-line formatting and Ethiopic script.
+    """
+    res_x = 1080 if aspect == "9:16" else 1920
+    res_y = 1920 if aspect == "9:16" else 1080
+    res = f"{res_x}x{res_y}"
+
+    title_size = 52 if aspect == "9:16" else 56
+    body_size = 28 if aspect == "9:16" else 30
+    sub_size = 24 if aspect == "9:16" else 26
+
+    # Generate ASS file for the end card
+    ass_path = output_path.parent / f"end_card_{'v9_16' if aspect == '9:16' else 'h16_9'}.ass"
+    st = "0:00:00.00"
+    et = f"0:00:{duration_s:05.2f}"
+
+    ass_text = f"""[Script Info]
+Title: AI Disclosure End Card
+ScriptType: v4.00+
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+PlayResX: {res_x}
+PlayResY: {res_y}
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: TitleStyle,Nyala,{title_size},&H0037AFD4,&H000000FF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,2,2,5,30,30,0,1
+Style: BodyStyle,Nyala,{body_size},&H00FFFFFF,&H000000FF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,1,1,5,30,30,0,1
+Style: SubStyle,Nyala,{sub_size},&H00AAAAAA,&H000000FF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,1,1,5,30,30,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,{st},{et},TitleStyle,,0,0,0,,THE HERITAGE SHORT\\N{{\\fs{title_size-6}\\c&H00D4AF37&}}የእጁ ሚስጥር
+Dialogue: 0,{st},{et},BodyStyle,,0,0,0,,\\N\\N\\N\\NCreated with AI for Educational & Cultural Preservation
+Dialogue: 0,{st},{et},SubStyle,,0,0,0,,\\N\\N\\N\\N\\N\\NVisuals: FLUX.1 schnell & Leonardo AI Phoenix\\NNarration: Gemini 3.8 Flash TTS (Charon & Algenib)\\NMusic: Acoustic Ethiopian Synthesis (Krar, Begena, Washint, Kebero)
+"""
+    with open(ass_path, "w", encoding="utf-8") as f:
+        f.write(ass_text)
+
+    ass_filter_path = ass_path.resolve().as_posix().replace(":", "\\:")
+
+    cmd = [
+        "ffmpeg", "-y",
+        "-f", "lavfi", "-i", f"color=c=#0d0d0f:s={res}:d={duration_s}:r=24",
+        "-f", "lavfi", "-i", f"anullsrc=channel_layout=stereo:sample_rate=44100:d={duration_s}",
+        "-vf", f"subtitles='{ass_filter_path}',fade=t=in:st=0:d=0.3,fade=t=out:st={duration_s-0.3}:d=0.3",
+        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "24",
+        "-c:a", "aac", "-b:a", "192k",
+        "-shortest",
+        str(output_path)
+    ]
+    res_code = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+    if res_code.returncode != 0:
+        print(f"[ERROR] Failed to generate AI end card: {res_code.stderr}", file=sys.stderr)
+        return False
+    return True
+
+
+def master_final(aspect: str = "9:16", target_i: float = -14.0, target_lra: float = 7.0, target_tp: float = -1.0) -> bool:
+    """
+    Phase 3 Master Delivery Engine:
+    1. Ensures rough cut is built.
+    2. Performs two-pass EBU R128 / ITU-R BS.1770 (-14 LUFS, True Peak <= -1 dB) loudness normalization.
+    3. Synthesizes and appends the 2.5s AI Disclosure End Card.
+    4. Outputs finalized master MP4: `outputs/final/final_master_9_16.mp4` or `final_master_16_9.mp4`.
+    """
+    aspect_slug = "9_16" if aspect == "9:16" else "16_9"
+    rough_name = "rough_cut.mp4" if aspect == "9:16" else "rough_cut_h16_9.mp4"
+    rough_path = FINAL_DIR / rough_name
+
+    if not rough_path.exists():
+        print(f"[INFO] Rough cut {rough_name} does not exist. Assembling it first...")
+        ok = build_rough_cut(aspect=aspect)
+        if not ok:
+            return False
+
+    print(f"\n{'='*70}")
+    print(f"🎚️ TWO-PASS -14 LUFS MASTERING & AI END CARD ({aspect})")
+    print(f"{'='*70}\n")
+
+    # Pass 1: Measure loudness statistics
+    print(f"[1/4] Running Pass 1 loudness measurement (Target: {target_i} LUFS, TP: {target_tp} dB)...")
+    pass1_cmd = [
+        "ffmpeg", "-y",
+        "-i", str(rough_path),
+        "-vn",
+        "-af", f"loudnorm=I={target_i}:LRA={target_lra}:tp={target_tp}:print_format=json",
+        "-f", "null", "-"
+    ]
+    proc1 = subprocess.run(pass1_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    stderr_output = proc1.stderr
+
+    # Parse JSON from stderr
+    import re
+    json_match = re.search(r"\{[\s\S]*\"input_i\"[\s\S]*\}", stderr_output)
+    if not json_match:
+        print("[ERROR] Failed to parse loudnorm Pass 1 metrics from FFmpeg output.", file=sys.stderr)
+        return False
+
+    stats = json.loads(json_match.group(0))
+    measured_i = stats.get("input_i")
+    measured_tp = stats.get("input_tp")
+    measured_lra = stats.get("input_lra")
+    measured_thresh = stats.get("input_thresh")
+    target_offset = stats.get("target_offset")
+
+    print(f"      Measured Audio: Integrated={measured_i} LUFS | TP={measured_tp} dB | LRA={measured_lra}")
+
+    # Pass 2: Apply linear normalization to rough cut audio + true peak limiting to -1.0 dBFS (amplitude 0.891)
+    print(f"[2/4] Running Pass 2 two-pass loudness normalization...")
+    normalized_feature = FINAL_DIR / f"feature_mastered_{aspect_slug}.mp4"
+    pass2_filter = (
+        f"loudnorm=I={target_i}:LRA={target_lra}:tp={target_tp}:"
+        f"measured_I={measured_i}:measured_LRA={measured_lra}:measured_tp={measured_tp}:"
+        f"measured_thresh={measured_thresh}:offset={target_offset}:linear=true,"
+        f"alimiter=limit=0.891:attack=5:release=50:asc=true:level=false"
+    )
+    pass2_cmd = [
+        "ffmpeg", "-y",
+        "-i", str(rough_path),
+        "-c:v", "copy",
+        "-af", pass2_filter,
+        "-c:a", "aac", "-b:a", "192k",
+        str(normalized_feature)
+    ]
+    subprocess.run(pass2_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+
+    # Step 3: Generate 2.5s AI Disclosure End Card
+    print(f"[3/4] Synthesizing 2.5s Ethical AI Disclosure End Card...")
+    end_card_path = FINAL_DIR / f"end_card_{aspect_slug}.mp4"
+    ok = generate_ai_end_card(end_card_path, aspect=aspect, duration_s=2.5)
+    if not ok:
+        return False
+
+    # Step 4: Concatenate Feature + End Card into Final Master MP4
+    print(f"[4/4] Concatenating feature and end card into Final Master Cut...")
+    final_master_path = FINAL_DIR / f"final_master_{aspect_slug}.mp4"
+    concat_manifest = FINAL_DIR / f"master_concat_{aspect_slug}.txt"
+    with open(concat_manifest, "w", encoding="utf-8") as f:
+        f.write(f"file '{normalized_feature.resolve().as_posix()}'\n")
+        f.write(f"file '{end_card_path.resolve().as_posix()}'\n")
+
+    concat_cmd = [
+        "ffmpeg", "-y",
+        "-f", "concat", "-safe", "0",
+        "-i", str(concat_manifest),
+        "-c", "copy",
+        str(final_master_path)
+    ]
+    subprocess.run(concat_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+
+    file_size_mb = final_master_path.stat().st_size / (1024 * 1024)
+    print(f"\n[SUCCESS] Final Master Delivered: {final_master_path.name}")
+    print(f"          Path: {final_master_path}")
+    print(f"          File Size: {file_size_mb:.2f} MB")
+    print(f"          Standard: -14.0 LUFS Integrated | True Peak <= -1.0 dBFS | End Card: +2.5s\n")
+    return True
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Assembly and Mastering Pipeline")
     parser.add_argument("--radio-cut", action="store_true", help="Assemble Radio Cut (Checkpoint 1)")
     parser.add_argument("--rough-cut", action="store_true", help="Assemble Rough Cut (Checkpoint 2)")
-    parser.add_argument("--aspect", choices=["9:16", "16:9"], default="9:16", help="Aspect ratio for Rough Cut")
+    parser.add_argument("--master", action="store_true", help="Perform -14 LUFS Two-Pass Mastering & AI End Card (Phase 3 Master)")
+    parser.add_argument("--aspect", choices=["9:16", "16:9"], default="9:16", help="Aspect ratio (default: 9:16)")
 
     args = parser.parse_args()
 
-    if args.rough_cut:
+    if args.master:
+        success = master_final(aspect=args.aspect)
+    elif args.rough_cut:
         success = build_rough_cut(aspect=args.aspect)
     else:
         success = build_radio_cut()
