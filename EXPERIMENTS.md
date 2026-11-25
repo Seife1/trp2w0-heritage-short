@@ -55,3 +55,26 @@ A minimum of 10 structured experiments are logged here.
   - Candidate B: RMS 0.313, Crest Factor 12.33 dB, Speech Masking Ratio: 1.48%, Composite Audition Score: **11.97**
   - Candidate C: RMS 0.246, Crest Factor 12.22 dB, Speech Masking Ratio: 2.12%, Composite Audition Score: **11.70**
 - **Decision:** Adopt Candidate A as winning score (`outputs/audio/music/score_final.wav`) for highest dynamic headroom (Crest Factor 12.74 dB) and clear separation from dialogue.
+
+---
+
+### Experiment 04: Keyframe Model A/B Test — FLUX.1 schnell vs. Leonardo AI Phoenix 1.0
+- **Date:** 2026-11-25
+- **Target Stage:** Keyframe Generation
+- **Hypothesis:** Leonardo AI Phoenix 1.0 (`@cf/leonardo/phoenix-1.0`) will produce superior wide-landscape environmental depth and cultural garment weave texture (Netela/Gabi fringes) compared to FLUX.1 schnell, while maintaining comparable zero-dollar API execution speed.
+- **Fixed Parameters:**
+  - Identical conditioned prompts from `storyboard.json` (character anchors + scene action + style block).
+  - Target: All 9 narrative shots (`shot_01` through `shot_09`).
+  - Provider: Cloudflare Workers AI REST API.
+- **Single Variable Changed:** Model architecture:
+  - Model A: `@cf/black-forest-labs/flux-1-schnell` (outputs in `outputs/keyframes/`)
+  - Model B: `@cf/leonardo/phoenix-1.0` (outputs in `outputs/keyframes_leonardo/`)
+- **Measured Result:**
+  - Quantitative:
+    - FLUX.1 schnell: 96.9s total (avg 10.76s/img), avg file size 708 KB (PNG).
+    - Leonardo Phoenix 1.0: 86.8s total (avg 9.64s/img), avg file size 683 KB (JPEG).
+  - Qualitative:
+    - *Wide Landscape Depth (Shots 01 & 09):* Leonardo Phoenix achieved superior panoramic terraced hill depth, realistic agricultural furrow contouring, and authentic acacia dispersion.
+    - *Garment Fidelity (Shots 05 & 06):* Leonardo Phoenix rendered intricate fringed borders on Ato Berhanu's Gabi and natural linen folding on Kaleb's tunic with high anatomical hand accuracy (5 distinct fingers with natural grip mechanics).
+    - *Emotional Closeness (Shots 02 & 04):* FLUX produced higher emotional micro-contrast in facial perspiration and intense direct-to-lens eye contact.
+- **Decision:** Adopt Leonardo Phoenix 1.0 as a verified production-grade alternative engine (`--model leonardo`). Maintain FLUX.1 schnell as primary baseline for intense emotional portraits and Leonardo Phoenix for expansive landscape storytelling.

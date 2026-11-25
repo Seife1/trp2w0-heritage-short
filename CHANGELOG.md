@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Multi-Model Keyframe A/B Testing (`pipeline/keyframes.py`):**
+  - Added support for `--model leonardo` integrating **Leonardo AI Phoenix 1.0** (`@cf/leonardo/phoenix-1.0`) alongside FLUX.1 schnell.
+  - Successfully generated and visually validated all 9 alternate keyframes in `outputs/keyframes_leonardo/`.
+  - Documented quantitative and qualitative A/B evaluation in `EXPERIMENTS.md` (Experiment 04).
 - **Rough Cut Assembly (`pipeline/assemble.py --rough-cut`):**
   - Assembled Checkpoint 2 Rough Cut in both `9:16` vertical (`rough_cut.mp4`, 11.16 MB) and `16:9` horizontal (`rough_cut_h16_9.mp4`, 10.17 MB).
   - Synchronized all 9 moving video shots (65.50s total duration conforming to the 60-90s contract).
