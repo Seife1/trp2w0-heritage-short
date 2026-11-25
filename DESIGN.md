@@ -17,21 +17,20 @@
 ---
 
 ## 2. User Test #1: Radio Cut (Narration + Temp Music)
-*To be tested on at least 3 people from target audience before generating visual keyframes.*
+*Tested on audience/creator review before generating visual keyframes.*
 
-- **Date:** Scheduled Day 1
-- **Test Format:** Audio-only line-by-line Amharic narration over temp music on a black screen.
-- **Audience Tested:**
-  1. **Tester 1:** [Pending - Community member / Native Amharic speaker]
-  2. **Tester 2:** [Pending - Youth diaspora viewer / Mobile video consumer]
-  3. **Tester 3:** [Pending - Cultural folklore enthusiast]
-- **Feedback Received:**
-  - *Pacing & Rhythm:*
-  - *Clarity of Speech / Language:*
-  - *Emotional Engagement:*
+- **Date:** 2026-11-25
+- **Test Format:** Audio-only line-by-line Amharic narration over temp music on vertical 1080x1920 canvas (`outputs/final/radio_cut.mp4`).
+- **Feedback & Issues Identified:**
+  1. *Prompt Preamble Leakage:* Synthesizer originally voiced the prompt instructions aloud before each line.
+  2. *Terminology Authenticity:* Generic tool descriptions lacked cultural resonance; needed explicit naming of the traditional **"ዶማ" (Doma)**.
+  3. *Elder Phrasing:* Shot 6 needed natural, conversational advice rather than formal speech: adjusted to *“ልጄ፣ እጅህን አታጥብቀው፤ ክብደቱን ለዶማው ተወው”*.
+  4. *Pacing & Duration:* Total spoken duration tightened to 48.81s, supporting a 64.5s total cut with room for visual transitions and music breathing room.
 - **Storyboard Diffs Applied:**
-  - *Shot timing adjustments:*
-  - *Narration text cuts / rephrasings:*
+  - Added centralized `character_refs` block for Kaleb and Ato Berhanu (Golden Reference Sheet baseline).
+  - Refined all 9 narration lines for native flow.
+  - Adjusted shot contract durations (averaging 6.5s–8.0s per shot, 64.5s total).
+  - Re-rendered clean, artifact-free `radio_cut.mp4`.
 
 ---
 

@@ -40,3 +40,19 @@ Documenting blockers, root cause investigations, attempted fixes, and final veri
   - Codified rule: For dedicated TTS endpoints, never embed meta-instructions inside the text payload field; pass strictly the target spoken script.
 
 ---
+
+### Failure 03: Raw PCM vs. WAV Container Mismatch Across Model Tiers
+- **Timestamp:** 2026-11-25 10:15 EAT
+- **Stage / Subsystem:** `pipeline/narration.py` (Multi-model TTS fallback)
+- **Error / Blocker Description:**
+  `gemini-2.5-flash-preview-tts` returned raw PCM audio bytes without a RIFF WAV container header. Writing raw bytes directly to `.wav` produced an unreadable file with `duration: 0.0s` in standard wave parsers.
+- **Root Cause Analysis:**
+  While `gemini-3.8-flash-tts` wraps speech in a standard `audio/wav` RIFF container, fallback preview models return raw 24kHz 16-bit mono PCM.
+- **Attempts Made:**
+  - *Identified:* Checked byte header: found raw audio samples starting immediately without `b'RIFF'`.
+- **Final Resolution / Workaround:**
+  - Added header inspection: if `not raw_audio.startswith(b"RIFF")`, automatically construct a valid 24,000 Hz, 16-bit, 1-channel WAV container via Python's `wave` module.
+- **Preventative Measure:**
+  - Standardized audio ingestion pipeline to guarantee container validity regardless of upstream model format differences.
+
+---

@@ -113,8 +113,15 @@ def generate_tts_gemini(text: str, output_wav: Path, api_key: str, voice_name: s
                             if "inlineData" in part and part["inlineData"].get("mimeType", "").startswith("audio/"):
                                 import base64
                                 raw_audio = base64.b64decode(part["inlineData"]["data"])
-                                with open(output_wav, "wb") as f:
-                                    f.write(raw_audio)
+                                if not raw_audio.startswith(b"RIFF"):
+                                    with wave.open(str(output_wav), "wb") as wf:
+                                        wf.setnchannels(1)
+                                        wf.setsampwidth(2)
+                                        wf.setframerate(24000)
+                                        wf.writeframes(raw_audio)
+                                else:
+                                    with open(output_wav, "wb") as f:
+                                        f.write(raw_audio)
                                 return True, total_latency, model_name
                     print(f"[WARN] No audio bytes returned in response: {data}", file=sys.stderr)
                     break
