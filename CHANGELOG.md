@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Original Score Engine (`pipeline/music.py`):**
+  - Implemented culturally authentic acoustic synthesizer modeling traditional Ethiopian instruments: Krar (plucked lyre in Tizita minor), Begena (10-string box lyre with 'birke' buzz), Washint (bamboo flute), and Kebero (hand drum).
+  - Built automated audition engine generating 3 distinct arrangements, measuring spectral speech masking (1kHz–3kHz) and dynamic headroom.
+  - Exported winning score (`outputs/audio/music/score_final.wav`) with 1.5s seamless crossfade between struggle (74 BPM) and wisdom (80 BPM) cues.
 - **Moving Shots Engine (`pipeline/shots.py`):**
   - Built programmatic FFmpeg Ken Burns dynamic camera engine translating storyboard motion prompts into fluid 24fps motion clips with zero aspect distortion.
   - Added dual aspect ratio rendering (`9:16` vertical 1080x1920 and `16:9` horizontal 1920x1080) for all 9 narrative shots.
