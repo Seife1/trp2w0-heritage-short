@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Single-Command Pipeline Entrypoint (`run.py`):**
+  - Built stranger-friendly unified CLI providing one-command end-to-end reproducibility (`python run.py`).
+  - Added `--dry-run` flag to audit schema validity, asset health, and contract durations without triggering network calls or consuming API quotas.
+  - Added stage filtering (`--stage {schema,narration,music,curate,shots,master}`) and aspect targeting (`--aspect {9:16,16:9,both}`).
 - **Two-Pass -14 LUFS Loudness Mastering & AI Disclosure End Card (`pipeline/assemble.py --master`):**
   - Implemented EBU R128 / ITU-R BS.1770 compliant two-pass mastering with true-peak limiting (`-14.0 LUFS` integrated, `True Peak <= -1.0 dBFS`, `LRA = 5.6 LU`).
   - Synthesized a 2.5s Ethical AI Disclosure End Card rendered with DirectWrite `Nyala` typography highlighting generative AI models used (FLUX.1 schnell, Leonardo Phoenix, Gemini Flash TTS, and acoustic instrument synthesis).

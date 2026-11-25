@@ -42,7 +42,7 @@ flowchart TD
 
 ---
 
-## 🚀 Quickstart
+## 🚀 Quickstart & One-Command Run
 
 ### Prerequisites
 * **Python 3.10+** (or [`uv`](https://docs.astral.sh/uv/))
@@ -58,6 +58,23 @@ cd the-heritage-short
 
 # Create your local environment file
 cp .env.example .env
+# Edit .env and paste your GEMINI_API_KEY and CLOUDFLARE_API_TOKEN
+```
+
+### 2. Single-Command Reproducibility (`run.py`)
+Run the entire production pipeline end-to-end with one command:
+```bash
+# Verify schema contract & asset health without network calls
+python run.py --dry-run
+
+# Run full end-to-end production master (Validates -> Narrates -> Scores -> Curates -> Renders -> Masters)
+python run.py
+
+# Or run individual stages on demand:
+python run.py --stage curate
+python run.py --stage shots
+python run.py --stage master --aspect 9:16
+```
 ```
 Open `.env` in your editor and add your API credentials:
 ```env
@@ -151,6 +168,7 @@ python pipeline/assemble.py --master --aspect 16:9
 
 See the full [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
 
+* **2026-11-25:** Implemented single-entrypoint runner `run.py` supporting one-command end-to-end execution, `--dry-run` health checks, and granular `--stage` invocation.
 * **2026-11-25:** Implemented two-pass -14 LUFS loudness mastering with true-peak limiting (`-14.4 LUFS`, `TP <= -1.0 dBFS`) and synthesized a 2.5s Ethical AI Disclosure End Card into `outputs/final/final_master_9_16.mp4` and `final_master_16_9.mp4`.
 * **2026-11-25:** Integrated multi-model keyframe curation (`pipeline/curate.py`) and per-shot dual-voice narration (Charon + Algenib).
 * **v0.1.0 (2026-11-24):** Initialized repository architecture, schema contract, documentation framework, and v0.1.0 release tag.
