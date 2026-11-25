@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Keyframe Generation Engine (`pipeline/keyframes.py`):**
+  - Integrated Cloudflare Workers AI (`@cf/black-forest-labs/flux-1-schnell`) with automated SHA-256 caching and retry logic.
+  - Ingested root character conditioning (`ref_kaleb` and `ref_ato_berhanu`) and centered cinematic framing for dual `9:16` and `16:9` safety.
+  - Successfully generated and visually validated all 9 narrative keyframes in `outputs/keyframes/`.
+- **Character & Setting Reference Generator (`pipeline/references.py`):**
+  - Produced golden anchor reference sheets for Kaleb, Ato Berhanu, and the highland farm setting.
 - **Multi-Model TTS Fallback Cascade (`pipeline/narration.py`):**
   - Added seamless tier routing (`gemini-3.8-flash-tts` &rarr; `gemini-3.8-flash-lite-tts` &rarr; `gemini-2.5-flash-preview-tts`) to navigate free-tier daily quotas.
   - Added automated raw PCM to RIFF WAV container packaging for preview endpoints.
