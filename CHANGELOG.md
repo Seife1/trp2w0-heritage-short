@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Moving Shots Engine (`pipeline/shots.py`):**
+  - Built programmatic FFmpeg Ken Burns dynamic camera engine translating storyboard motion prompts into fluid 24fps motion clips with zero aspect distortion.
+  - Added dual aspect ratio rendering (`9:16` vertical 1080x1920 and `16:9` horizontal 1920x1080) for all 9 narrative shots.
+  - Implemented SHA-256 caching and telemetry logging into `runs.jsonl`.
+  - Added Kaggle/Colab remote execution script (`scripts/kaggle_wan_ti2v.py`) for Wan 2.2 TI2V-5B GPU generation.
 - **Keyframe Generation Engine (`pipeline/keyframes.py`):**
   - Integrated Cloudflare Workers AI (`@cf/black-forest-labs/flux-1-schnell`) with automated SHA-256 caching and retry logic.
   - Ingested root character conditioning (`ref_kaleb` and `ref_ato_berhanu`) and centered cinematic framing for dual `9:16` and `16:9` safety.
