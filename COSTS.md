@@ -14,7 +14,8 @@ All model calls are logged per-execution in `runs.jsonl`. This document summariz
 | **Keyframes** | FLUX-1-schnell | Cloudflare AI | ~10.8s / image | 9 images | 96.9s API time | $0.00 (Daily Free Allowance) |
 | **Moving Shots** | Ken Burns / FFmpeg 8.0 | Local CPU (i7) | ~4.6s / shot | 18 clips (9x 9:16, 9x 16:9) | 88.6s compute | Local Compute |
 | **Music Score** | Ethiopian Acoustic Synth | Local CPU (i7) | ~3.8s / candidate | 3 candidates + eval | 11.4s compute | Local Compute |
-| **Final Assembly** | FFmpeg | Local CPU | Pending | 2 renders | N/A | Local Compute |
+| **Rough Cut Assembly** | FFmpeg 8.0 (libass + directwrite) | Local CPU (i7) | ~38.7s / render | 2 renders (9:16 + 16:9) | 77.4s compute | Local Compute |
+| **Final Mastering** | FFmpeg (two-pass -14 LUFS) | Local CPU (i7) | Pending | 2 renders | Pending | Local Compute |
 
 ---
 

@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Rough Cut Assembly (`pipeline/assemble.py --rough-cut`):**
+  - Assembled Checkpoint 2 Rough Cut in both `9:16` vertical (`rough_cut.mp4`, 11.16 MB) and `16:9` horizontal (`rough_cut_h16_9.mp4`, 10.17 MB).
+  - Synchronized all 9 moving video shots (65.50s total duration conforming to the 60-90s contract).
+  - Layered winning original score (`score_final.wav`) with dynamic sidechain ducking (-8 to -10 dB under speech).
+  - Integrated dual Amharic & English subtitles via Advanced SubStation Alpha (`.ass`) with DirectWrite font rendering of native Windows `Nyala`.
 - **Original Score Engine (`pipeline/music.py`):**
   - Implemented culturally authentic acoustic synthesizer modeling traditional Ethiopian instruments: Krar (plucked lyre in Tizita minor), Begena (10-string box lyre with 'birke' buzz), Washint (bamboo flute), and Kebero (hand drum).
   - Built automated audition engine generating 3 distinct arrangements, measuring spectral speech masking (1kHz–3kHz) and dynamic headroom.

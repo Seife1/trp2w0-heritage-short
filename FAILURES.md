@@ -56,3 +56,37 @@ Documenting blockers, root cause investigations, attempted fixes, and final veri
   - Standardized audio ingestion pipeline to guarantee container validity regardless of upstream model format differences.
 
 ---
+
+### Failure 04: Cloudflare Workers AI FLUX Payload HTTP 400 (Unsupported Root Keys)
+- **Timestamp:** 2026-11-25 10:47 EAT
+- **Stage / Subsystem:** `pipeline/references.py` & `pipeline/keyframes.py` (`@cf/black-forest-labs/flux-1-schnell`)
+- **Error / Blocker Description:**
+  ```text
+  HTTP 400: {"success":false,"errors":[{"code":10000,"message":"Invalid request body: Extra inputs are not permitted"}]}
+  ```
+- **Root Cause Analysis:**
+  Cloudflare's implementation of FLUX-1-schnell strictly validates its incoming JSON schema and rejects custom root parameters such as `seed`, `num_steps`, or `aspect_ratio`.
+- **Attempts Made:**
+  - Sent standard Diffusers-style payload with `seed` and `num_steps: 4`.
+- **Final Resolution / Workaround:**
+  - Stripped all auxiliary parameters and passed strictly `{"prompt": prompt}`. Embedded framing and style constraints directly within the prompt text.
+- **Preventative Measure:**
+  - Updated API wrapper to keep payloads minimal and schema-compliant with Cloudflare Workers AI specs.
+
+---
+
+### Failure 05: FFmpeg Drawtext Nested Quote Collision & ASS Subtitles Migration
+- **Timestamp:** 2026-11-25 12:36 EAT
+- **Stage / Subsystem:** `pipeline/assemble.py` (Rough Cut Assembly)
+- **Error / Blocker Description:**
+  ```text
+  [AVFilterGraph] No option name near ' \What one does not know brings much sweat.':fontcolor=white...
+  ```
+- **Root Cause Analysis:**
+  Chaining 18 individual `drawtext` filters with single quotes inside English proverb translations caused quote escaping collisions in FFmpeg's filtergraph parser.
+- **Attempts Made:**
+  - Attempted multi-layer backslash escaping (`\'` and `\\'`).
+- **Final Resolution / Workaround:**
+  - Migrated subtitle rendering to an Advanced SubStation Alpha (`.ass`) file using the `subtitles=` filter with direct DirectWrite font rendering of Windows `Nyala`.
+- **Preventative Measure:**
+  - Standardized all multi-line bilingual subtitle rendering through dedicated ASS files rather than inline filtergraph text strings.
