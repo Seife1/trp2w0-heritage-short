@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Hybrid Keyframe Curation Pipeline (`pipeline/curate.py`):**
+  - Synthesized evaluator A/B feedback into a curated master keyframe sequence in `outputs/keyframes_curated/` pairing Leonardo Phoenix (landscape depth, garment weaves, companions) and FLUX.1 schnell (fatigue, strained grip, mentor posture).
+  - Generated automated curation manifest (`outputs/keyframes_curated/curation_manifest.json`) recording per-shot model selection rationale.
+- **Curated Rough Cut Re-assembly:**
+  - Updated `pipeline/shots.py` and `pipeline/assemble.py` to target the curated master keyframes.
+  - Re-rendered both vertical (`rough_cut.mp4`, 10.47 MB) and horizontal (`rough_cut_h16_9.mp4`, 9.56 MB) cuts with improved tool consistency and landscape depth.
+- **Per-Shot TTS Voice Selection (`pipeline/narration.py`):**
+  - Set Charon as the default voice and Algenib for Shot 6 through the storyboard contract.
+  - Include the selected voice in narration cache keys so voice changes regenerate affected stems.
 - **Multi-Model Keyframe A/B Testing (`pipeline/keyframes.py`):**
   - Added support for `--model leonardo` integrating **Leonardo AI Phoenix 1.0** (`@cf/leonardo/phoenix-1.0`) alongside FLUX.1 schnell.
   - Successfully generated and visually validated all 9 alternate keyframes in `outputs/keyframes_leonardo/`.

@@ -90,3 +90,23 @@ Documenting blockers, root cause investigations, attempted fixes, and final veri
   - Migrated subtitle rendering to an Advanced SubStation Alpha (`.ass`) file using the `subtitles=` filter with direct DirectWrite font rendering of Windows `Nyala`.
 - **Preventative Measure:**
   - Standardized all multi-line bilingual subtitle rendering through dedicated ASS files rather than inline filtergraph text strings.
+
+---
+
+### Failure 06: Cloudflare Workers AI Daily Free Allocation Ceiling (Code 4006)
+- **Timestamp:** 2026-11-25 17:38 EAT
+- **Stage / Subsystem:** `pipeline/keyframes.py` (`@cf/black-forest-labs/flux-1-schnell` & `@cf/leonardo/phoenix-1.0`)
+- **Error / Blocker Description:**
+  ```text
+  HTTP 429: {"errors":[{"message":"AiError: you have used up your daily free allocation of 10,000 neurons, please upgrade to Cloudflare's Workers Paid plan if you would like to continue usage.","code":4006}]}
+  ```
+- **Root Cause Analysis:**
+  Cloudflare Workers AI Free Tier grants a hard cap of 10,000 Neurons per calendar day. Having generated 3 golden references + 9 FLUX keyframes + 9 Leonardo Phoenix keyframes (21 full high-resolution generations in one day), the daily allocation was fully exhausted.
+- **Attempts Made:**
+  - Standard exponential backoff paused for 10s, 20s, and 30s, but Cloudflare returned HTTP 429 consistently because the daily ceiling had been reached.
+- **Final Resolution / Workaround:**
+  - Shifted from continuous regeneration to a high-precision **Hybrid Curation Pipeline** (`pipeline/curate.py`).
+  - Evaluated the 18 already-generated keyframes across FLUX and Leonardo sets, selecting the optimal frame per shot based on human evaluator feedback (e.g. Leonardo for wide landscapes, FLUX for emotional strain).
+  - Assembled the curated master sequence in `outputs/keyframes_curated/` and generated the final motion cuts at zero additional cost.
+- **Preventative Measure:**
+  - Implemented multi-model caching and hybrid curation to maximize visual variety across daily quota windows without triggering paid plan requirements.

@@ -108,6 +108,8 @@ python pipeline/assemble.py --radio-cut
    English subtitles are generated directly from the storyboard contract and burned inside the vertical `9:16` safe zone (clear of platform buttons on TikTok, Reels, and YouTube Shorts).
 4. **Ken Burns Dynamic Fallback:**  
    If remote GPU video generation hits queue limits or exceeds 3 retries, the pipeline automatically falls back to smooth FFmpeg `zoompan` motion to guarantee deadline delivery.
+5. **Per-Shot TTS Voice Selection:**
+   Charon is the default narration voice, with Algenib assigned to Ato Berhanu's spoken line in Shot 6. Voice changes invalidate only the affected narration cache.
 
 ---
 

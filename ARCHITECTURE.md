@@ -28,6 +28,8 @@ flowchart TD
 - **Engine:** Google AI Studio `Gemini 3.8 Flash TTS`
 - **Granularity:** Line-by-line (one `.wav` file per shot).
 - **Output:** `outputs/audio/narration_{shot_id}.wav`
+- **Voice selection:** `storyboard.json` sets Charon as the default preset; a shot may override it. Shot 6 uses Algenib for Ato Berhanu's dialogue.
+- **Caching:** The selected voice is included in each narration cache key, so changing a shot's voice invalidates only that shot's cached narration.
 - **Duration Locking:** The exact measured speech duration drives the visual clip duration during assembly.
 
 ### 3. Keyframe Generation (`pipeline/keyframes.py`)

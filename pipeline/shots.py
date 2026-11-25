@@ -30,7 +30,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from schema.validate import validate_storyboard
 
 STORYBOARD_PATH = PROJECT_ROOT / "storyboard.json"
-KEYFRAMES_DIR = PROJECT_ROOT / "outputs" / "keyframes"
+CURATED_KEYFRAMES_DIR = PROJECT_ROOT / "outputs" / "keyframes_curated"
+DEFAULT_KEYFRAMES_DIR = CURATED_KEYFRAMES_DIR if CURATED_KEYFRAMES_DIR.exists() else (PROJECT_ROOT / "outputs" / "keyframes")
 SHOTS_DIR = PROJECT_ROOT / "outputs" / "shots"
 WAN_DIR = SHOTS_DIR / "wan"
 RUNS_LOG_PATH = PROJECT_ROOT / "runs.jsonl"
@@ -194,7 +195,7 @@ def render_kenburns_shot(keyframe_path: Path, output_path: Path, shot_cfg: dict,
     return True
 
 
-def generate_shots(mode: str = "kenburns", aspect: str = "9:16", target_shot: str = "all", force: bool = False) -> bool:
+def generate_shots(mode: str = "kenburns", aspect: str = "9:16", target_shot: str = "all", force: bool = False, keyframes_dir: Path = None) -> bool:
     """Generate motion video clips for all storyboard shots."""
     if not validate_storyboard(str(STORYBOARD_PATH)):
         return False
@@ -204,9 +205,11 @@ def generate_shots(mode: str = "kenburns", aspect: str = "9:16", target_shot: st
 
     shots = storyboard.get("shots", [])
     SHOTS_DIR.mkdir(parents=True, exist_ok=True)
+    kf_dir = keyframes_dir or DEFAULT_KEYFRAMES_DIR
 
     print(f"\n{'='*70}")
     print(f"🎬 MOVING SHOTS PIPELINE (Mode: {mode.upper()} | Aspect: {aspect})")
+    print(f"   Keyframes Source: {kf_dir.name}")
     print(f"{'='*70}")
 
     success_count = 0
@@ -219,7 +222,7 @@ def generate_shots(mode: str = "kenburns", aspect: str = "9:16", target_shot: st
 
         duration_s = float(shot["duration_s"])
         motion_prompt = shot.get("motion_prompt", "")
-        keyframe_path = KEYFRAMES_DIR / f"{shot_id}.png"
+        keyframe_path = kf_dir / f"{shot_id}.png"
 
         if not keyframe_path.exists():
             print(f"[ERROR] Missing keyframe for {shot_id}: {keyframe_path}", file=sys.stderr)
@@ -284,8 +287,10 @@ if __name__ == "__main__":
     parser.add_argument("--aspect", choices=["9:16", "16:9"], default="9:16", help="Target aspect ratio")
     parser.add_argument("--shot", default="all", help="Target shot ID (e.g. shot_01) or 'all'")
     parser.add_argument("--force", action="store_true", help="Force re-rendering even if cached")
+    parser.add_argument("--keyframes-dir", default=None, help="Directory containing input keyframes")
 
     args = parser.parse_args()
-    success = generate_shots(mode=args.mode, aspect=args.aspect, target_shot=args.shot, force=args.force)
+    kf_path = Path(args.keyframes_dir) if args.keyframes_dir else None
+    success = generate_shots(mode=args.mode, aspect=args.aspect, target_shot=args.shot, force=args.force, keyframes_dir=kf_path)
     if not success:
         sys.exit(1)

@@ -7,6 +7,7 @@
     "title",
     "target_duration_s",
     "language",
+    "narration_voice",
     "style_block",
     "music_cues",
     "shots"
@@ -22,6 +23,11 @@
     "language": {
       "type": "string",
       "default": "en"
+    },
+    "narration_voice": {
+      "type": "string",
+      "enum": ["Charon", "Algenib"],
+      "description": "Default Gemini TTS voice preset; individual shots may override it."
     },
     "target_duration_s": {
       "type": "number",
@@ -107,6 +113,11 @@
           "narration_text": {
             "type": "string",
             "minLength": 1
+          },
+          "narration_voice": {
+            "type": "string",
+            "enum": ["Charon", "Algenib"],
+            "description": "Optional Gemini TTS voice preset for this shot."
           },
           "music_cue_id": {
             "type": "string"

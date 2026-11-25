@@ -63,7 +63,7 @@ def log_run(stage: str, model: str, params: dict, latency_s: float, status: str,
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def generate_tts_gemini(text: str, output_wav: Path, api_key: str, voice_name: str = "Puck", max_retries: int = 3) -> tuple[bool, float, str]:
+def generate_tts_gemini(text: str, output_wav: Path, api_key: str, voice_name: str = "Charon", max_retries: int = 3) -> tuple[bool, float, str]:
     """
     Call Gemini Speech Generation / Flash TTS endpoint.
     Cascades through fallback models: gemini-3.8-flash-tts -> gemini-3.8-flash-lite-tts -> gemini-2.5-flash-preview-tts.
@@ -170,6 +170,7 @@ def run_narration_pipeline(force: bool = False) -> bool:
         storyboard = json.load(f)
 
     shots = storyboard.get("shots", [])
+    default_voice = storyboard["narration_voice"]
     print(f"[INFO] Generating narration for {len(shots)} shots using Gemini Flash TTS...")
 
     all_success = True
@@ -180,7 +181,7 @@ def run_narration_pipeline(force: bool = False) -> bool:
         hash_file = AUDIO_DIR / f"narration_{shot_id}.hash"
 
         # Compute SHA-256 of text + voice settings
-        voice_name = "Puck"
+        voice_name = shot.get("narration_voice", default_voice)
         content_hash = hashlib.sha256(f"{text}|{voice_name}".encode("utf-8")).hexdigest()
 
         # Check Cache
