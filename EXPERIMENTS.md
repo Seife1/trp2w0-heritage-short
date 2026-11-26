@@ -173,3 +173,34 @@ A minimum of 10 structured experiments are logged here.
   - Hard Fail: Pipeline crashed on Shot 7 after hitting free-tier RPM limits, halting execution.
   - Cascade: Automatically recovered on Shot 9 by routing to `gemini-2.5-flash-preview-tts` and packaging raw PCM into standard WAV container, achieving 100% pipeline completion.
 - **Decision:** Embed three-tier cascade permanently in `pipeline/narration.py`.
+
+---
+
+### Experiment 11: Aspect-Aware Cinematic Safe Framing vs. Mathematical Center-Crop
+- **Date:** 2026-11-26
+- **Target Stage:** Moving Shots & Cinematography (`pipeline/shots.py`)
+- **Hypothesis:** Calibrating shot-specific normalized framing anchors ($x, y$) based on focal action (raised tool blade during swings, two-person dialogue positioning) will eliminate subject clipping in vertical mobile (`9:16`) and horizontal widescreen (`16:9`) compared to naive mathematical center cropping.
+- **Fixed Parameters:**
+  - 9 narrative storyboard shots.
+  - Target resolutions: 1080x1920 (`9:16`) and 1920x1080 (`16:9`) at 24fps.
+  - Video engine: FFmpeg Ken Burns dynamic vector engine.
+- **Single Variable Changed:** Framing method: Mathematical center-crop (`(in_w-crop_w)/2`) vs. Normalized anchor-weighted framing offsets (`FRAMING_PROFILES`).
+- **Measured Result:**
+  - Mathematical Center-Crop: On Shot 02 and Shot 07, the raised *Doma* blade was lopped off at the top frame border. On Shot 05, Ato Berhanu's speaking face was clipped in vertical `9:16`.
+  - Aspect-Aware Framing (`FRAMING_PROFILES`): Vertically biased upper headroom ($y = 0.40 - 0.42$) on swing shots kept 100% of the blade and impact in frame. Adjusted horizontal offset ($x = 0.45$) on Shot 05 captured both grandfather and grandson with zero subject truncation.
+- **Decision:** Standardize `FRAMING_PROFILES` in `pipeline/shots.py` for all aspect ratio conversions.
+
+---
+
+### Experiment 12: Golden Reference Sheet Extraction & Visual Token Cache Invalidation
+- **Date:** 2026-11-26
+- **Target Stage:** Keyframe Conditioning & Upstream Asset Architecture
+- **Hypothesis:** Decomposing a 7-in-1 Golden Reference Sheet into discrete visual token assets (`token_kaleb`, `token_doma`, `token_landscape`) and hashing their content timestamps into `compute_keyframe_hash()` will prevent prompt-based character drift while enabling automatic shot invalidation when reference art is modified.
+- **Fixed Parameters:**
+  - Storyboard contract with 9 narrative keyframe definitions.
+  - Visual reference: `character_assets_sheet.jpg` (Kaleb, Ato Berhanu, Doma, Palm, Landscape, House, Acacia).
+- **Single Variable Changed:** Caching input dependencies: Hashing text prompt alone vs. Hashing text prompt + token image file contents.
+- **Measured Result:**
+  - Prompt-only Hash: Updating a reference image (e.g. refining Kaleb's facial texture or the Doma blade collar) went unnoticed by the cache, requiring manual `--force` re-renders.
+  - Token-integrated Hash: Modifying any visual token automatically invalidated exactly the shots referencing that token in `storyboard.json` (`shot.character_refs`), leaving unaffected shots 100% cached.
+- **Decision:** Embed visual token extraction and token-integrated SHA-256 caching into `pipeline/references.py` and `pipeline/keyframes.py`.

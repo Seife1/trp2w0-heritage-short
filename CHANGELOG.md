@@ -10,9 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Aspect-Aware Cinematic Safe Framing (`pipeline/shots.py`):**
+- **Automated Validation Test Suite (`tests/test_pipeline.py` & `run.py --test`):**
+  - Added comprehensive pytest test suite verifying schema validation, 60-90s contract compliance, voice rules, visual reference auto-extraction, deterministic caching, and aspect-aware framing.
+  - Achieved 100% pass rate (7/7 tests passed in 1.08s).
+- **Aspect-Aware Cinematic Safe Framing (Experiment 11):**
   - Integrated `FRAMING_PROFILES` with shot-specific normalized anchor offsets ($x, y$) preventing tool-head and character clipping across `9:16` vertical mobile feeds and `16:9` widescreen.
   - Balanced two-character mentorship interaction (Shots 05, 06, 07, 09) within safe visual margins.
+- **Golden Visual Reference Integration & Token Invalidation (Experiment 12):**
+  - Ingested golden character and landscape reference sheets into `outputs/references/`.
+  - Extracted 7 isolated visual tokens and integrated their timestamps into `compute_keyframe_hash()`.
 - **Title Harmonization & Enhanced Bilingual End Card:**
   - Standardized official film title to `"የማያውቁት ነገር ላብ ያበረክታል"` across `storyboard.json`, documentation, and metadata.
   - Rendered updated 2.5s Ethical AI Disclosure End Card with gold Amharic quotation title and English translation (*"What one does not know brings much sweat and toil."*).

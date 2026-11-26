@@ -172,6 +172,8 @@ python pipeline/assemble.py --master --aspect 16:9
 
 See the full [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
 
+* **2026-11-26:** Implemented automated test suite (`tests/test_pipeline.py`) with 7/7 passing tests, integrated visual token auto-extraction, and verified end-to-end execution via `python run.py`.
+* **2026-11-26:** Implemented aspect-aware cinematographic safe framing (`FRAMING_PROFILES`) and updated title to `"የማያውቁት ነገር ላብ ያበረክታል"`.
 * **2026-11-25:** Implemented single-entrypoint runner `run.py` supporting one-command end-to-end execution, `--dry-run` health checks, and granular `--stage` invocation.
 * **2026-11-25:** Implemented two-pass -14 LUFS loudness mastering with true-peak limiting (`-14.4 LUFS`, `TP <= -1.0 dBFS`) and synthesized a 2.5s Ethical AI Disclosure End Card into `outputs/final/final_master_9_16.mp4` and `final_master_16_9.mp4`.
 * **2026-11-25:** Integrated multi-model keyframe curation (`pipeline/curate.py`) and per-shot dual-voice narration (Charon + Algenib).
