@@ -1,6 +1,6 @@
 # The Heritage Short — AI-Content Generation Pipeline
 
-[![Version](https://img.shields.io/badge/version-v0.2.1-blue.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.2.2-blue.svg)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![Tests](https://img.shields.io/badge/tests-8%20passed-brightgreen.svg)]()
 [![Contract](https://img.shields.io/badge/contract-JSON%20Schema%20Draft--07-purple.svg)](./schema/storyboard.schema.json)
@@ -172,6 +172,7 @@ python pipeline/assemble.py --master --aspect 16:9
 
 See the full [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
 
+* **2026-11-26 (v0.2.2):** Refined Shot 04 (V-neck homespun tunic wardrobe alignment, kneeling pose) and Shot 07 (anchored to authentic terraced highland landscape reference + proportionate curved single-blade doma); regenerated klein keyframes, updated Ken Burns 24fps motion clips, and re-mastered both 9:16 and 16:9 cuts (-14.0 LUFS). 8/8 automated tests passing.
 * **2026-11-26 (v0.2.1):** Aligned Shot 03 (`injured_palm` reference + blistered palm macro) and Shot 09 (`rural_house` + `landscape` references, rear-view sunset walk); stripped caption bars from all 7 visual reference tokens, refined doma adze blade veto clauses, regenerated klein keyframes, and rebuilt both final masters (−14.0 LUFS). Documented Experiment 14, Failures 09–10. 14 experiments, 10 failure analyses, 8/8 tests passing.
 * **2026-11-26 (v0.2.0):** Added `--model klein` (`@cf/black-forest-labs/flux-2-klein-4b`) with real pixel-level image conditioning via `multipart/form-data` (`input_image_0..3`). All 9 keyframes regenerated with up to 4 visual reference tokens. `curate.py` promoted klein as primary model. Test suite expanded to 8/8 passing.
 * **2026-11-26:** Implemented automated test suite (`tests/test_pipeline.py`) with 7/7 passing tests, integrated visual token auto-extraction, and verified end-to-end execution via `python run.py`.

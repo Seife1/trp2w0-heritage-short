@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [0.2.2] - 2026-11-26
+
+### Changed
+- **Keyframe Refinement (Shots 04 & 07):**
+  - **Shot 04:** Enforced homespun V-neck cotton tunic (eliminating button-front shirt variance) and added `landscape` reference token to lock highland background continuity.
+  - **Shot 07:** Bound `landscape` token to prompt, replacing anomalous arid desert background with authentic terraced highland hills and acacia trees. Re-prompted doma blade geometry to prevent oversized shovel/spade distortion, achieving a realistic, single-sided curved hoe blade.
+- **Master Assembly:**
+  - Re-rendered 9:16 vertical and 16:9 horizontal 24fps motion clips for Shots 04 and 07.
+  - Re-mastered both final cuts with -14.0 LUFS integrated loudness, dynamic audio ducking, and 2.5s Ethical AI Disclosure End Card.
+
+## [0.2.1] - 2026-11-26
 
 ### Added
 - **Automated Validation Test Suite (`tests/test_pipeline.py` & `run.py --test`):**
