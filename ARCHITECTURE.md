@@ -8,7 +8,7 @@ flowchart TD
     Contract["storyboard.json"] --> Validate["schema/storyboard.schema.json Validator"]
     Validate --> Narration["pipeline/narration.py (Gemini 3.8 Flash TTS)"]
     Validate --> Keyframes["pipeline/keyframes.py (Cloudflare FLUX.2 klein 4B)"]
-    Validate --> Music["pipeline/music.py (ACE-Step 1.5)"]
+    Validate --> Music["pipeline/music.py (Procedural Acoustic Synth)"]
     Keyframes --> Shots["pipeline/shots.py (Wan 2.2 / Ken Burns)"]
     Narration --> Assembly["pipeline/assemble.py (FFmpeg)"]
     Music --> Assembly
@@ -46,8 +46,15 @@ flowchart TD
 - **Fallback:** Automatic fallback to FFmpeg Ken Burns dynamic `zoompan` after 3 failed attempts or GPU exhaustion.
 
 ### 5. Original Score (`pipeline/music.py`)
-- **Engine:** `ACE-Step 1.5`
-- **Output:** 3 candidate stems in `outputs/audio/music_candidate_{1,2,3}.wav`.
+- **Engine:** Procedural Acoustic Physical Modeling (NumPy / SciPy). Rather than remote black-box text-to-music models (e.g. ACE-Step / Suno) which hallucinate Western chromatic harmonies or unwanted vocal babble, the score is synthesized locally in culturally authentic Ethiopian pentatonic Tizita modal scales:
+  - **Krar (የክራር ዜማ):** Karplus-Strong physical modeling of plucked bowl lyre in D minor Tizita.
+  - **Begena (የበገና ዜማ):** Harmonic saturation modeling the 10-string box lyre buzzing bridge ("birke").
+  - **Washint (ዋሽንት):** End-blown bamboo flute model with breath turbulence and 5 Hz vibrato.
+  - **Kebero (ከበሮ):** Resonant hand drum model with dual bass boom and rim slap.
+- **Contract Integration:** Dynamically loads cue definitions, start/end timestamps, BPM, and keys from `storyboard.json` (`music_cues`) rather than hardcoded constants.
+- **Deterministic Reproducibility:** Seeded NumPy PRNG (`--seed`, default `42`) guarantees bit-for-bit identical waveforms and audition scores across runs.
+- **Audition Engine & Methodology:** Generates 3 candidate arrangements; computes an objective mathematical proxy for crest factor and 1kHz–3kHz speech-presence band masking. Structured human listening tests (User Test #2) across phone speakers and headphones validate final perceptual dialogue intelligibility.
+- **Output:** Stems in `outputs/audio/music/` and master score `outputs/audio/music/score_final.wav`.
 
 ### 6. Assembly & Mastering (`pipeline/assemble.py`)
 - **Tool:** `FFmpeg`

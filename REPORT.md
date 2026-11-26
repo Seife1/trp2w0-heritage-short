@@ -77,7 +77,10 @@ Rather than settling for text-only generative models or spending paid credits, w
 As part of our exploration beyond the floor, we benchmarked our open-tier, zero-cost production pipeline against frontier commercial alternatives (ElevenLabs, Midjourney v6.1, Runway Gen-3, Suno v4, and Dolby.io):
 
 1. **Cost & Accessibility:** The commercial equivalent cost for this 68s production is **~$6.10 per run**. By leveraging Gemini Flash TTS, Cloudflare Workers AI (FLUX & Leonardo), procedural acoustic audio synthesis, and FFmpeg, our pipeline achieved **$0.00 marginal cost**, making it fully democratized for creators in developing ecosystems.
-2. **Cultural Authenticity over Generative Hallucination:** Frontier music generators (Suno/Udio) frequently hallucinate Western harmonies or synthetic pop vocals over dialogue. Our procedural acoustic synthesizer (modeling Karplus-Strong Krar in D minor Tizita, buzzing Begena bass in G major Tizita, Washint flute, and Kebero percussion) maintained strict cultural authenticity and guaranteed **12.74 dB of dynamic crest factor** for vocal clarity.
+2. **Cultural Authenticity over Generative Hallucination:**
+   - *Planned vs. Actual Implementation:* While our initial technical proposal outlined remote GPU generation via ACE-Step 1.5, in practice generic text-to-music models failed to reproduce authentic Ethiopian pentatonic Tizita modal scales (D minor and G major Tizita). They frequently hallucinated Western 12-TET chord progressions or synthetic vocal babble over dialogue.
+   - *Procedural Physical Modeling:* We built an in-house procedural acoustic physical modeling synthesizer (Karplus-Strong Krar, saturated Begena bass buzz, breath-modeled Washint, and pitch-dropped Kebero) dynamically bound to `storyboard.json` (`music_cues`) and seeded for bit-for-bit reproducibility.
+   - *Audition Proxy vs. Perceptual Listening:* The automated audition engine calculates dynamic crest factor (12.74 dB) and 1kHz–3kHz speech-band energy ratios as an objective mathematical proxy for spectral headroom. However, mathematical metrics do not simulate true human scene perception; final dialogue intelligibility was verified through structured human listening tests across phone speakers and headphones (User Test #2).
 3. **What We Would Build Next:**
    - Train a custom LoRA on traditional Ethiopian highland agricultural implements (Doma, Maresha, Gabi) to achieve 100% automated single-prompt keyframe generation.
    - Package the pipeline into an Antigravity MCP Server / CLI for non-technical community storytellers to archive oral folklore into broadcast-ready shorts.
@@ -94,4 +97,4 @@ As part of our exploration beyond the floor, we benchmarked our open-tier, zero-
 - [x] **Subtitles:** Dual Amharic (Gold) & English (White) burned-in subtitles rendered with DirectWrite `Nyala` within safe viewing zones.
 - [x] **Ethical AI Card:** 2.5s disclosure end card appended to both master files citing all models used.
 - [x] **Reproducibility:** One-command unified runner `python run.py` (with `--dry-run` and `--stage` options).
-- [x] **Documentation Complete:** `README.md`, `ARCHITECTURE.md`, `DESIGN.md`, `EXPERIMENTS.md` (15 entries), `FAILURES.md` (10 entries), `COSTS.md`, `ETHICS.md`, and `CHANGELOG.md`.
+- [x] **Documentation Complete:** `README.md`, `ARCHITECTURE.md`, `DESIGN.md`, `EXPERIMENTS.md` (15 entries), `FAILURES.md` (11 entries), `COSTS.md`, `ETHICS.md`, and `CHANGELOG.md`.

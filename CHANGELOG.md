@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.3] - 2026-11-26
+
+### Changed
+- **Contract-Driven Music Pipeline Refactor (`pipeline/music.py`):**
+  - Dynamically bound cue durations, boundary timestamps, tempos (BPM), and modal keys directly to `storyboard.json` (`music_cues`), eliminating hardcoded function arguments.
+  - Implemented PRNG seed management (`--seed`, default `42`) across Karplus-Strong Krar, Washint breath turbulence, and Kebero snap physical modeling for 100% bit-for-bit deterministic synthesis.
+  - Clarified objective audition scoring methodology in code and reports (dynamic crest factor and 1k-3k Hz speech-presence band energy as an automated mathematical filter vs. human listening validation).
+  - Synchronized architectural documentation across `ARCHITECTURE.md`, `README.md`, `ETHICS.md`, `REPORT.md`, and added Failure 11 to `FAILURES.md` detailing the replacement of planned ACE-Step with culturally authentic procedural physical modeling.
+  - Added `test_music_contract_and_determinism` to automated test suite (9/9 passed).
+
 ## [0.2.2] - 2026-11-26
 
 ### Changed

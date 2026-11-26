@@ -24,7 +24,7 @@
 | **Gemini 3.8 Flash TTS** | Google AI Studio | Terms of Service | Output audio rights granted to creator | [x] Yes |
 | **FLUX.2 klein (4B)** | Black Forest Labs / Cloudflare | Apache 2.0 | Full commercial & creative use allowed | [x] Yes |
 | **Wan 2.2 TI2V-5B** | Wan-Video Team | Apache 2.0 | Open source, commercial use allowed | [x] Yes |
-| **ACE-Step 1.5** | ACE-Step Team | MIT | Commercial audio generation allowed | [x] Yes |
+| **Procedural Acoustic Synth (Krar, Begena, Washint, Kebero)** | In-House Python (NumPy/SciPy) | MIT / Open Source | Original procedural physical modeling; 100% royalty-free, zero copyright risk | [x] Yes |
 
 *Note: No living artists are named in style prompts; descriptive aesthetic terms (lighting, texture, grain, traditional textile weave) are used exclusively.*
 

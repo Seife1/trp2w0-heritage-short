@@ -128,6 +128,24 @@ def test_aspect_aware_framing_profiles():
     assert FRAMING_PROFILES["shot_07"]["crop_center_y"] <= 0.45, "Shot 7 needs upper headroom for falling blade"
 
 
+def test_music_contract_and_determinism():
+    """Verify music pipeline loads cues dynamically from contract and is 100% deterministic."""
+    from pipeline.music import load_music_cues_from_storyboard, render_cue_01_struggle
+    import numpy as np
+
+    cues = load_music_cues_from_storyboard()
+    assert cues["cue1"]["bpm"] == 74.0, "Cue 1 tempo must be 74 BPM from storyboard"
+    assert cues["cue2"]["bpm"] == 80.0, "Cue 2 tempo must be 80 BPM from storyboard"
+    assert abs(cues["total_target_s"] - 65.5) < 0.1, "Total target must match storyboard duration"
+
+    # Verify deterministic synthesis
+    rng1 = np.random.default_rng(42)
+    track1 = render_cue_01_struggle(bpm=74.0, total_duration_s=2.0, rng=rng1)
+    rng2 = np.random.default_rng(42)
+    track2 = render_cue_01_struggle(bpm=74.0, total_duration_s=2.0, rng=rng2)
+    np.testing.assert_array_equal(track1, track2, "Seeded synthesis must produce bit-for-bit identical waveforms")
+
+
 def test_dry_run_cli_entrypoint():
     """Verify run.py --dry-run completes cleanly with zero exit code."""
     import subprocess

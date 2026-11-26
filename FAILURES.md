@@ -203,3 +203,26 @@ Documenting blockers, root cause investigations, attempted fixes, and final veri
   The doma is visually "close enough" in all final shots — no shot shows a clearly wrong Western axe head after the prompt fixes — but perfect pixel accuracy for a culturally specific tool unseen in training data remains out of reach with current text-to-image models.
 - **Preventative Measure / Research Insight:**
   For culturally specific objects with no representation in Western-centric training data, the most effective strategy is a combination of: (1) explicit veto clauses negating the dominant prior, (2) reference image conditioning, and (3) textual description of the object's geometry. Document this as a known ceiling in `REPORT.md`. Future work: fine-tuning or LoRA training on Ethiopian tool imagery.
+
+
+---
+
+### Failure 11: Remote Generative Music Modal Drift & Audition Proxy Limits (ACE-Step vs. Procedural Synthesis)
+- **Timestamp:** 2026-11-26 20:30 EAT
+- **Stage / Subsystem:** `pipeline/music.py` (Original Score Synthesis & Audition)
+- **Error / Blocker Description:**
+  1. *Modal Drift:* Generic remote text-to-music models (ACE-Step 1.5, Suno, Udio) failed to synthesize authentic Ethiopian pentatonic Tizita modal scales (D minor and G major Tizita). Outputs consistently drifted into Western 12-TET major/minor chord progressions, introducing synthetic vocal babble and pop drums that competed directly with Amharic speech frequencies.
+  2. *Contract Disconnect & Non-Determinism:* Initial local prototyping hardcoded cue durations (27.5s, 39.5s) and tempos (74, 80 BPM) inside functions rather than dynamically ingesting them from `storyboard.json` (`music_cues`), and used unseeded `np.random` calls, making re-runs non-deterministic.
+  3. *Audition Metric Illusion:* The automated audition score (`composite_audition_score`) calculates crest-factor headroom and energy ratio in the 1kHz–3kHz speech-presence band on the music track in isolation. While useful as an automated mathematical filter, it does not assess real human auditory scene perception or dialogue clarity under mix conditions.
+- **Root Cause Analysis:**
+  Diffusion and autoregressive music models trained on general internet audio have minimal representation of horn-of-Africa pentatonic modes or indigenous instruments (Krar, Begena, Washint, Kebero). Relying on remote black-box generation eliminated fine modal control and burned GPU quota. Furthermore, unseeded PRNG calls violated pipeline reproducibility.
+- **Attempts Made:**
+  1. *Attempt 1:* Tested text-to-audio prompting with descriptive modal tags (`"Ethiopian Tizita minor, traditional krar"`) &rarr; outputs generated Western acoustic guitar arpeggios and generic cinematic strings.
+  2. *Attempt 2:* Hardcoded procedural audio script &rarr; generated correct scales, but ignored storyboard updates if cue lengths or tempos changed, and produced varying audio waveforms on each execution due to unseeded random noise bursts.
+- **Final Resolution / Workaround:**
+  - Implemented `load_music_cues_from_storyboard()` to dynamically bind cue timing, start/end bounds, tempos (BPM), and modal keys directly to the declarative `storyboard.json` contract.
+  - Injected deterministic PRNG seed management (`--seed`, default `42`) across all physical modeling functions (Karplus-Strong Krar pluck impulse, Washint breath turbulence, and Kebero snap), guaranteeing 100% bit-for-bit identical audio output across pipeline re-runs.
+  - Transparently documented the audition metric's scope: the automated mathematical proxy filters candidate headroom, while mandatory human listening tests across phone speakers and headphones (User Test #2 in `DESIGN.md`) validate perceptual dialogue intelligibility.
+- **Preventative Measure:**
+  - All acoustic generators must accept an explicit PRNG seed and dynamically derive durations from the storyboard contract.
+  - Never equate mathematical spectral proxies (e.g., FFT energy ratios) with perceptual human speech intelligibility; always ground audio claims in actual listening test logs.

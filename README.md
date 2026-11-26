@@ -1,8 +1,8 @@
 # The Heritage Short — AI-Content Generation Pipeline
 
-[![Version](https://img.shields.io/badge/version-v0.2.2-blue.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.2.3-blue.svg)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
-[![Tests](https://img.shields.io/badge/tests-8%20passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-9%20passed-brightgreen.svg)]()
 [![Contract](https://img.shields.io/badge/contract-JSON%20Schema%20Draft--07-purple.svg)](./schema/storyboard.schema.json)
 [![Status](https://img.shields.io/badge/status-active%20development-brightgreen.svg)]()
 
@@ -32,7 +32,7 @@ flowchart TD
     Contract["storyboard.json (Declarative Contract)"] --> Validator["schema/validate.py (Draft-07 Validator)"]
     Validator --> Narration["pipeline/narration.py (Gemini 3.8 Flash TTS)"]
     Validator --> Keyframes["pipeline/keyframes.py (Cloudflare FLUX.2 klein)"]
-    Validator --> Music["pipeline/music.py (ACE-Step 1.5)"]
+    Validator --> Music["pipeline/music.py (Procedural Acoustic Synth)"]
     Keyframes --> Shots["pipeline/shots.py (Wan 2.2 / FFmpeg Ken Burns)"]
     Narration --> Assembly["pipeline/assemble.py (FFmpeg Mastering)"]
     Music --> Assembly
@@ -172,6 +172,8 @@ python pipeline/assemble.py --master --aspect 16:9
 ## 📜 Recent Updates
 
 See the full [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
+
+* **2026-11-26 (v0.2.3):** Contract-driven music pipeline refactor (`pipeline/music.py`). Dynamically binds cue durations, transition timestamps, and BPMs to `storyboard.json`; introduced PRNG seed management (`--seed 42`) for bit-for-bit deterministic synthesis; updated `ARCHITECTURE.md`, `ETHICS.md`, and `REPORT.md` to accurately document procedural acoustic physical modeling instead of planned ACE-Step; added Failure 11; test suite expanded to 9/9 passing.
 
 * **2026-11-26 (v0.2.2):** Refined Shot 04 (V-neck homespun tunic wardrobe alignment, kneeling pose) and Shot 07 (anchored to authentic terraced highland landscape reference + proportionate curved single-blade doma); regenerated klein keyframes, updated Ken Burns 24fps motion clips, and re-mastered both 9:16 and 16:9 cuts (-14.0 LUFS). 8/8 automated tests passing.
 * **2026-11-26 (v0.2.1):** Aligned Shot 03 (`injured_palm` reference + blistered palm macro) and Shot 09 (`rural_house` + `landscape` references, rear-view sunset walk); stripped caption bars from all 7 visual reference tokens, refined doma adze blade veto clauses, regenerated klein keyframes, and rebuilt both final masters (−14.0 LUFS). Documented Experiment 14, Failures 09–10. 14 experiments, 10 failure analyses, 8/8 tests passing.
