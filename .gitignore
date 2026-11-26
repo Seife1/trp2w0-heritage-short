@@ -4,13 +4,15 @@
 .env.local
 
 # Outputs and generated media (do not commit heavy media to GitHub)
-outputs/
+outputs/*
+!outputs/references/
+outputs/references/*
+!outputs/references/*.jpg
+!outputs/references/*.png
+
 *.mp4
 *.wav
 *.mp3
-*.png
-*.jpg
-*.jpeg
 
 # Python caches and virtual environments
 __pycache__/

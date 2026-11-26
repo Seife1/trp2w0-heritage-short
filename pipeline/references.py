@@ -32,6 +32,55 @@ TOKEN_ASSETS = {
 }
 
 
+def ensure_visual_tokens() -> bool:
+    """
+    Ensures all visual reference tokens exist on a fresh clone.
+    If individual crops are missing, automatically extracts them from character_assets_sheet.jpg.
+    Guarantees stranger-friendly, zero-failure reproducibility.
+    """
+    REFERENCES_DIR.mkdir(parents=True, exist_ok=True)
+    sheet_path = REFERENCES_DIR / "character_assets_sheet.jpg"
+    if not sheet_path.exists():
+        # Fallback to golden_character_assets.jpg if present
+        alt_sheet = REFERENCES_DIR / "golden_character_assets.jpg"
+        if alt_sheet.exists():
+            import shutil
+            shutil.copy(alt_sheet, sheet_path)
+        else:
+            print(f"[WARN] Golden assets sheet not found at {sheet_path}", file=sys.stderr)
+            return False
+
+    missing_tokens = [k for k, p in TOKEN_ASSETS.items() if not p.exists() and k not in ("storyboard_grid", "assets_sheet")]
+    if not missing_tokens:
+        return True
+
+    print(f"[INFO] Extracting {len(missing_tokens)} missing visual tokens from character_assets_sheet.jpg...")
+    try:
+        from PIL import Image
+        img = Image.open(sheet_path)
+        w, h = img.size
+
+        crops = {
+            "token_kaleb": (0, 0, int(w * 0.25), int(h * 0.57)),
+            "token_ato_berhanu": (int(w * 0.25), 0, int(w * 0.50), int(h * 0.57)),
+            "token_doma": (int(w * 0.50), 0, int(w * 0.74), int(h * 0.57)),
+            "token_injured_palm": (int(w * 0.74), 0, w, int(h * 0.57)),
+            "token_landscape": (0, int(h * 0.57), int(w * 0.36), h),
+            "token_rural_house": (int(w * 0.36), int(h * 0.57), int(w * 0.68), h),
+            "token_acacia_tree": (int(w * 0.68), int(h * 0.57), w, h),
+        }
+
+        for name, box in crops.items():
+            cropped = img.crop(box)
+            out_p = REFERENCES_DIR / f"{name}.jpg"
+            cropped.save(out_p, quality=95)
+        print(f"[SUCCESS] Visual tokens automatically extracted successfully.")
+        return True
+    except Exception as e:
+        print(f"[ERROR] Failed to extract tokens: {e}", file=sys.stderr)
+        return False
+
+
 def get_cloudflare_creds() -> tuple[str, str]:
     account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
     token = os.environ.get("CLOUDFLARE_API_TOKEN")
