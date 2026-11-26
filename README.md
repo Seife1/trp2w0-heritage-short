@@ -172,7 +172,7 @@ python pipeline/assemble.py --master --aspect 16:9
 
 See the full [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
 
-* **2026-11-26 (v0.2.1):** Stripped caption bars from all 7 visual reference tokens (eliminates garbled text in generated keyframes). Rewrote 6 keyframe prompts with explicit doma adze blade veto clauses and clothing corrections. Regenerated all 9 klein keyframes, rebuilt both final masters (−14.0 LUFS). Documented Experiment 14, Failures 09–10. 14 experiments, 10 failure analyses, 8/8 tests passing.
+* **2026-11-26 (v0.2.1):** Aligned Shot 03 (`injured_palm` reference + blistered palm macro) and Shot 09 (`rural_house` + `landscape` references, rear-view sunset walk); stripped caption bars from all 7 visual reference tokens, refined doma adze blade veto clauses, regenerated klein keyframes, and rebuilt both final masters (−14.0 LUFS). Documented Experiment 14, Failures 09–10. 14 experiments, 10 failure analyses, 8/8 tests passing.
 * **2026-11-26 (v0.2.0):** Added `--model klein` (`@cf/black-forest-labs/flux-2-klein-4b`) with real pixel-level image conditioning via `multipart/form-data` (`input_image_0..3`). All 9 keyframes regenerated with up to 4 visual reference tokens. `curate.py` promoted klein as primary model. Test suite expanded to 8/8 passing.
 * **2026-11-26:** Implemented automated test suite (`tests/test_pipeline.py`) with 7/7 passing tests, integrated visual token auto-extraction, and verified end-to-end execution via `python run.py`.
 * **2026-11-26:** Implemented aspect-aware cinematographic safe framing (`FRAMING_PROFILES`) and updated title to `"የማያውቁት ነገር ላብ ያበረክታል"`.
