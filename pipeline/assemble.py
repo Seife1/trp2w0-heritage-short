@@ -432,11 +432,10 @@ def master_final(aspect: str = "9:16", target_i: float = -14.0, target_lra: floa
     rough_name = "rough_cut.mp4" if aspect == "9:16" else "rough_cut_h16_9.mp4"
     rough_path = FINAL_DIR / rough_name
 
-    if not rough_path.exists():
-        print(f"[INFO] Rough cut {rough_name} does not exist. Assembling it first...")
-        ok = build_rough_cut(aspect=aspect)
-        if not ok:
-            return False
+    print(f"[INFO] Rebuilding rough cut {rough_name} from latest shots and audio...")
+    ok = build_rough_cut(aspect=aspect)
+    if not ok:
+        return False
 
     print(f"\n{'='*70}")
     print(f"🎚️ TWO-PASS -14 LUFS MASTERING & AI END CARD ({aspect})")
