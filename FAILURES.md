@@ -110,3 +110,55 @@ Documenting blockers, root cause investigations, attempted fixes, and final veri
   - Assembled the curated master sequence in `outputs/keyframes_curated/` and generated the final motion cuts at zero additional cost.
 - **Preventative Measure:**
   - Implemented multi-model caching and hybrid curation to maximize visual variety across daily quota windows without triggering paid plan requirements.
+
+---
+
+### Failure 07: Image-Conditioned Generation Blocked by Cloudflare Workers AI API Limitations
+- **Timestamp:** 2026-11-26 08:40 EAT
+- **Stage / Subsystem:** `pipeline/keyframes.py` — Visual Token Conditioning (Character Consistency)
+- **Error / Blocker Description:**
+  ```text
+  HTTP 400: {"success":false,"errors":[{"code":10000,"message":"Invalid request body: Extra inputs are not permitted"}]}
+  ```
+  Attempts to pass extracted visual token crops (`token_kaleb.jpg`, `token_doma.jpg`, etc.) as reference image bytes to `@cf/black-forest-labs/flux-1-schnell` and `@cf/leonardo/phoenix-1.0` were rejected. Both endpoints accept only `{"prompt": "..."}` and enforce a strict schema rejecting all auxiliary keys including `input_image`, `image`, or `references`.
+- **Root Cause Analysis:**
+  Cloudflare Workers AI exposes a subset of each model's capabilities through a fixed schema. `flux-1-schnell` and `leonardo-phoenix-1.0` are deployed as **text-to-image only** endpoints on the free tier. Neither model exposes an IP-Adapter or image-conditioning pathway through the Workers AI REST API as of 2026-11-26. The model variant that does support image references (`@cf/black-forest-labs/flux-2-klein-4b`, accepting up to 4 `input_image_0..3` fields) was introduced on 2026-01-15 and is available on the Workers AI catalogue, but was not available on this account's daily neuron quota at the time of execution after prior keyframe and reference generation consumed the 10,000-neuron daily ceiling.
+- **Attempts Made:**
+  1. *Attempt 1:* Passed visual token image bytes in a `references` root key → HTTP 400 schema rejection.
+  2. *Attempt 2:* Passed token crops as base64-encoded `input_image` → HTTP 400 schema rejection on `flux-1-schnell`.
+  3. *Attempt 3:* Reformulated token conditioning as enriched text prompt descriptions extracted from `storyboard.json` `character_refs` entries (e.g. `"Kaleb: teenage Ethiopian boy, 14 years old, lean build, determined expression, traditional white netela over shoulders"`) → accepted by API, but yielded no pixel-level character locking.
+- **Final Resolution / Workaround:**
+  - **Short-term (implemented):** Visual tokens are injected into the **text prompt layer** only via `character_refs` description strings in `storyboard.json`. Token file mtimes are hashed into `compute_keyframe_hash()` so that reference art modifications trigger automatic cache invalidation and re-generation — but the actual pixel content of the tokens is not passed to the API.
+  - **Medium-term path:** Migrate to `@cf/black-forest-labs/flux-2-klein-4b` which supports `input_image_0..3` fields (up to 4 reference images at ≤ 512 × 512 px each). Approximate cost: ~127 neurons per 1024 × 768 image with 4 references; ~75 images per free daily quota.
+  - **Long-term path:** Self-hosted IP-Adapter pipeline (requires a local GPU with ≥ 12 GB VRAM, e.g. RTX 3080/4070) or a paid multi-modal image generation endpoint (Black Forest Labs FLUX.2 klein 4B API: ~$0.014 per image with references, $0.001 per additional MP of reference input).
+- **Impact on Output:**
+  Character appearance varies across the 9 keyframes. Kaleb's skin tone, Ato Berhanu's age lines, and Doma's blade collar shape are **prompt-steered but not image-anchored**. Inter-shot consistency is maintained only through careful prompt engineering, not pixel-level conditioning.
+- **Preventative Measure / Research Insight:**
+  Before designing a visual reference pipeline around a hosted API, verify the endpoint's image input schema against the provider's changelog (not just the model card). Free-tier endpoint schemas can be a strict subset of the full model capability. Document this ceiling observation in `REPORT.md` as a known limitation.
+
+---
+
+### Failure 08: Keyframe Cache Not Invalidated by New Visual Token Files (Hash Version Mismatch)
+- **Timestamp:** 2026-11-26 09:05 EAT
+- **Stage / Subsystem:** `pipeline/keyframes.py` — `compute_keyframe_hash()` cache invalidation logic
+- **Error / Blocker Description:**
+  ```text
+  [SHOT 01] [CACHE HIT] outputs/keyframes/shot_01_flux.jpg
+  ...
+  [SHOT 09] [CACHE HIT] outputs/keyframes/shot_09_flux.jpg
+  ```
+  After extracting 7 visual token crops (`token_kaleb.jpg`, `token_doma.jpg`, etc.) and committing them to `outputs/references/`, executing `python run.py` showed all 9 keyframes as `[CACHE HIT]` — zero re-generation occurred despite the new reference files being present.
+- **Root Cause Analysis:**
+  The `.hash` files in `outputs/keyframes/` were written by an older version of `compute_keyframe_hash()` that hashed only `prompt + style_block + model_id`. The updated hash function added `ref_tokens` (file modification timestamps) to the input, but the existing `.hash` files on disk still reflected the old short hash. Because the token files already existed at the time the cache check ran, their mtimes were stable, and the **new hash happened to collide with the old stale hash** stored on disk — the function signature changed but the resulting digest coincidentally matched for the initial run.
+- **Attempts Made:**
+  1. *Attempt 1:* Re-ran `python run.py` assuming the new token files would trigger invalidation → all 9 `[CACHE HIT]`.
+  2. *Attempt 2:* Confirmed `.hash` files contained the legacy short hash format without token mtime data.
+- **Final Resolution / Workaround:**
+  - Delete stale `.hash` files before the first run after a hash function upgrade:
+    ```powershell
+    Remove-Item outputs\keyframes\*.hash -ErrorAction SilentlyContinue
+    ```
+  - Re-run `python run.py` → all 9 shots regenerate with the token-integrated hash and write fresh `.hash` files.
+  - Alternatively, run `python run.py --force` to bypass cache entirely for one pass, then re-enable caching.
+- **Preventative Measure:**
+  - Embed a **hash format version prefix** (e.g. `v2:sha256:...`) inside every `.hash` file. Any change to the hash function increments the prefix version; `compute_keyframe_hash()` treats a version mismatch as a cache miss, automatically invalidating all stale entries without requiring manual deletion.
