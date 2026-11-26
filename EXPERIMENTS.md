@@ -257,3 +257,23 @@ A minimum of 10 structured experiments are logged here.
   - **Clothing accuracy:** Shot 08 Kaleb now wears a full-length tunic (previously rendered as shorts).
   - **Final masters rebuilt:** `final_master_9_16.mp4` (11.25 MB, −14.0 LUFS) and `final_master_16_9.mp4` (10.03 MB, −14.0 LUFS) — both pass broadcast loudness spec.
 - **Decision:** Adopt caption-stripped tokens and veto-clause prompts as the production baseline. Document the doma axe/adze shape confusion as a persistent model prior requiring prompt engineering (see Failure 09).
+
+
+---
+
+### Experiment 15: Wardrobe & Highland Setting Continuity Refinement (Shots 04 & 07)
+- **Date:** 2026-11-26
+- **Target Stage:** Keyframe Generation (`pipeline/keyframes.py`) & Cinematographic Continuity
+- **Hypothesis:** Explicitly conditioning Shot 04 on a homespun V-neck cotton tunic (vetoing button-front modern shirts) and binding Shot 07 to the `landscape` reference token (with negative prompts against arid desert dunes) will eliminate wardrobe jumps and preserve terraced highland topography across the middle act.
+- **Fixed Parameters:**
+  - Model: `@cf/black-forest-labs/flux-2-klein-4b` via `multipart/form-data`.
+  - Dimensions: 1024×1024 at 24fps Ken Burns rendering.
+  - Storyboard contract durations: Shot 04 (6.5s), Shot 07 (7.0s).
+- **Single Variable Changed:**
+  - Shot 04: Added `landscape` reference token to `character_refs` (`["kaleb", "landscape"]`) and enforced `"traditional Ethiopian homespun cotton V-neck tunic (NOT a button-front shirt, NO modern collar)"`.
+  - Shot 07: Added `landscape` reference token (`["ato_berhanu", "landscape"]`), vetoed desert sand dunes, and corrected blade prompt to `"proportionate single-sided curved hoe blade (NOT an oversized shovel, NOT a double-sided pick)"`.
+- **Measured Result:**
+  - Shot 04: Wardrobe perfectly matches Shot 01–03 (sleeveless/short-sleeve earthen homespun texture without modern buttons). Green terraced background restores environmental continuity.
+  - Shot 07: Arid yellow desert backdrop replaced by lush green highland terraces with acacia silhouettes, matching Shot 01, 05, and 09. Doma blade rendered with authentic, functional proportions.
+  - Both final masters rebuilt: `final_master_9_16.mp4` (12.06 MB) and `final_master_16_9.mp4` (11.65 MB), both meeting `-14.0 LUFS` loudness standard.
+- **Decision:** Integrate refined keyframes into curated sequence (`outputs/keyframes_curated/`). Bump pipeline release to `v0.2.2`.

@@ -7,7 +7,7 @@ The Heritage Short generation pipeline is an automated, contract-driven, reprodu
 flowchart TD
     Contract["storyboard.json"] --> Validate["schema/storyboard.schema.json Validator"]
     Validate --> Narration["pipeline/narration.py (Gemini 3.8 Flash TTS)"]
-    Validate --> Keyframes["pipeline/keyframes.py (Cloudflare FLUX)"]
+    Validate --> Keyframes["pipeline/keyframes.py (Cloudflare FLUX.2 klein 4B)"]
     Validate --> Music["pipeline/music.py (ACE-Step 1.5)"]
     Keyframes --> Shots["pipeline/shots.py (Wan 2.2 / Ken Burns)"]
     Narration --> Assembly["pipeline/assemble.py (FFmpeg)"]

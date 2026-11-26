@@ -130,8 +130,8 @@ python pipeline/assemble.py --master --aspect 9:16
 python pipeline/assemble.py --master --aspect 16:9
 ```
 *Final Master cuts generated at:*  
-* Vertical Master (`9:16`): `outputs/final/final_master_9_16.mp4` (68.11s, -14.4 LUFS, TP -0.7 dBFS)  
-* Horizontal Master (`16:9`): `outputs/final/final_master_16_9.mp4` (68.11s, -14.4 LUFS, TP -0.7 dBFS)  
+* Vertical Master (`9:16`): `outputs/final/final_master_9_16.mp4` (12.06 MB, 68.11s, -14.0 LUFS)  
+* Horizontal Master (`16:9`): `outputs/final/final_master_16_9.mp4` (11.65 MB, 68.11s, -14.0 LUFS)  
 
 ---
 
@@ -158,6 +158,7 @@ python pipeline/assemble.py --master --aspect 16:9
 | **[`schema/`](./schema/)** | JSON Schema validation engine enforcing contract rules before runs. |
 | **[`pipeline/`](./pipeline/)** | Modular, decoupled generators for speech, images, video, score, and assembly. |
 | **[`runs.jsonl`](./runs.jsonl)** | Append-only execution telemetry (latencies, parameters, timestamps, status). |
+| **[`REPORT.md`](./REPORT.md)** | Written analytical report: audience learnings, hardest problem resolution, suggested practice comparison, and frontier benchmarking. |
 | **[`DESIGN.md`](./DESIGN.md)** | Target audience persona, viewing context, and User Tests #1 & #2 logs. |
 | **[`ARCHITECTURE.md`](./ARCHITECTURE.md)** | Stage contracts, caching design, and error recovery workflows. |
 | **[`ETHICS.md`](./ETHICS.md)** | Mandatory consent verification, model licenses, and AI attribution plan. |

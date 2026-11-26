@@ -94,4 +94,4 @@ As part of our exploration beyond the floor, we benchmarked our open-tier, zero-
 - [x] **Subtitles:** Dual Amharic (Gold) & English (White) burned-in subtitles rendered with DirectWrite `Nyala` within safe viewing zones.
 - [x] **Ethical AI Card:** 2.5s disclosure end card appended to both master files citing all models used.
 - [x] **Reproducibility:** One-command unified runner `python run.py` (with `--dry-run` and `--stage` options).
-- [x] **Documentation Complete:** `README.md`, `ARCHITECTURE.md`, `DESIGN.md`, `EXPERIMENTS.md` (14 entries), `FAILURES.md` (10 entries), `COSTS.md`, `ETHICS.md`, and `CHANGELOG.md`.
+- [x] **Documentation Complete:** `README.md`, `ARCHITECTURE.md`, `DESIGN.md`, `EXPERIMENTS.md` (15 entries), `FAILURES.md` (10 entries), `COSTS.md`, `ETHICS.md`, and `CHANGELOG.md`.
