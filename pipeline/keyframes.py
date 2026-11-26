@@ -57,6 +57,30 @@ def get_cloudflare_creds() -> tuple[str, str]:
     return account_id or "", token or ""
 
 
+def compute_keyframe_hash(prompt: str, style_block: str, seed: int, model_id: str, ref_tokens: list[str] = None) -> str:
+    """
+    Deterministic input-hash caching.
+    Incorporates prompt, style block, seed, model parameters, and content hashes
+    of extracted visual reference tokens (Kaleb, Ato Berhanu, Doma, Landscape).
+    """
+    hasher = hashlib.sha256()
+    hasher.update(prompt.encode("utf-8"))
+    hasher.update(style_block.encode("utf-8"))
+    hasher.update(str(seed).encode("utf-8"))
+    hasher.update(model_id.encode("utf-8"))
+
+    if ref_tokens:
+        for token_name in sorted(ref_tokens):
+            token_path = PROJECT_ROOT / "outputs" / "references" / f"token_{token_name}.jpg"
+            if token_path.exists():
+                with open(token_path, "rb") as tf:
+                    hasher.update(tf.read())
+            else:
+                hasher.update(token_name.encode("utf-8"))
+
+    return hasher.hexdigest()
+
+
 def log_run(stage: str, model: str, params: dict, latency_s: float, status: str, details: dict):
     entry = {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

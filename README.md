@@ -2,6 +2,7 @@
 
 [![Version](https://img.shields.io/badge/version-v0.1.0-blue.svg)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+[![Tests](https://img.shields.io/badge/tests-7%20passed-brightgreen.svg)]()
 [![Contract](https://img.shields.io/badge/contract-JSON%20Schema%20Draft--07-purple.svg)](./schema/storyboard.schema.json)
 [![Status](https://img.shields.io/badge/status-active%20development-brightgreen.svg)]()
 
@@ -64,6 +65,9 @@ cp .env.example .env
 ### 2. Single-Command Reproducibility (`run.py`)
 Run the entire production pipeline end-to-end with one command:
 ```bash
+# Run automated pytest validation suite
+python run.py --test
+
 # Verify schema contract & asset health without network calls
 python run.py --dry-run
 

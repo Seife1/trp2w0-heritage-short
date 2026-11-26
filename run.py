@@ -159,15 +159,27 @@ def run_pipeline(stage_filter: str = None, aspect: str = "both") -> bool:
     return True
 
 
+def run_tests() -> bool:
+    """Executes the automated pytest validation suite."""
+    print("\n" + "="*75)
+    print("🧪 EXECUTING AUTOMATED PIPELINE TEST SUITE")
+    print("="*75 + "\n")
+    proc = subprocess.run([sys.executable, "-m", "pytest", "-v", "tests/test_pipeline.py"], cwd=str(PROJECT_ROOT))
+    return proc.returncode == 0
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="The Heritage Short — Master Production Pipeline")
     parser.add_argument("--dry-run", action="store_true", help="Audit contract and asset health without external calls")
+    parser.add_argument("--test", action="store_true", help="Execute the automated pytest validation suite")
     parser.add_argument("--stage", choices=["schema", "narration", "music", "curate", "shots", "master"], help="Execute only a specific pipeline stage")
     parser.add_argument("--aspect", choices=["9:16", "16:9", "both"], default="both", help="Target aspect ratio for assembly (default: both)")
 
     args = parser.parse_args()
 
-    if args.dry_run:
+    if args.test:
+        success = run_tests()
+    elif args.dry_run:
         success = dry_run()
     else:
         success = run_pipeline(stage_filter=args.stage, aspect=args.aspect)
