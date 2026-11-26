@@ -4,9 +4,12 @@
 *Defined prior to media asset generation.*
 
 - **Story Concept:**
-  - Title: **The Weight of the Handle (የእጁ ሚስጥር)**
+  - Title: **"የማያውቁት ነገር ላብ ያበረክታል"** (*What one does not know brings much sweat and toil*).
   - Core Proverb: **"የማያውቁት ነገር ላብ ያበረክታል"** (*What one does not know brings much sweat and toil*).
   - Premise: Young Kaleb exhausts himself trying to plow stony highland soil through brute force alone. His grandfather, Ato Berhanu, demonstrates that the secret lies in balance, angle, and ancestral technique rather than reckless muscle.
+- **Cinematic Framing & Aspect Ratio Architecture (16:9 vs. 9:16):**
+  - *Problem:* A simple center crop between wide landscape and vertical phone screens destroys composition—either cutting off tool heads during swings or lopping off one subject in two-person shots (Shots 05, 06, 07, 09).
+  - *Director Solution:* Programmed normalized shot-by-shot framing offsets (`FRAMING_PROFILES` in `pipeline/shots.py`) ensuring focal action (Ato Berhanu's gestures, falling Doma blade, blistered palm) remains inside the vertical safe pillar and horizontal letterbox with zero subject clipping.
 - **Target Audience (Persona):**
   - *Primary Persona:* Ethiopian diaspora youth, second-generation immigrants, and African folklore enthusiasts who consume mobile short-form video.
   - *Viewing Context:* Vertical mobile feeds (`9:16`) on YouTube Shorts, TikTok, Instagram Reels, and WhatsApp status.

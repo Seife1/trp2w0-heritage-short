@@ -9,7 +9,7 @@ An automated, schema-driven, multi-model pipeline that transforms a single decla
 
 ---
 
-## 📖 Story: *The Weight of the Handle (የእጁ ሚስጥር)*
+## 📖 Story: *"የማያውቁት ነገር ላብ ያበረክታል"*
 
 > **"የማያውቁት ነገር ላብ ያበረክታል"**  
 > *"What one does not know brings much sweat and toil."* — Traditional Ethiopian Proverb

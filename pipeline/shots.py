@@ -144,11 +144,62 @@ def compute_shot_hash(keyframe_path: Path, motion_prompt: str, duration_s: float
     return hasher.hexdigest()
 
 
+# Shot-specific framing offsets to prevent anatomical clipping across 9:16 and 16:9
+# Values define normalized crop center offset (0.0=left/top, 0.5=center, 1.0=right/bottom)
+FRAMING_PROFILES = {
+    "shot_01": {
+        "desc": "Wide terraced landscape - centered on Kaleb at dawn",
+        "crop_center_x": 0.50,
+        "crop_center_y": 0.48
+    },
+    "shot_02": {
+        "desc": "Downward strike - slight top bias to preserve raised tool head",
+        "crop_center_x": 0.52,
+        "crop_center_y": 0.40
+    },
+    "shot_03": {
+        "desc": "Extreme close-up torn palm - focused on blistered center",
+        "crop_center_x": 0.50,
+        "crop_center_y": 0.50
+    },
+    "shot_04": {
+        "desc": "Kaleb forehead resting on doma - centered on head and handle",
+        "crop_center_x": 0.48,
+        "crop_center_y": 0.42
+    },
+    "shot_05": {
+        "desc": "Ato Berhanu and Kaleb - bias toward center-left to capture elder's dialogue gesture",
+        "crop_center_x": 0.45,
+        "crop_center_y": 0.46
+    },
+    "shot_06": {
+        "desc": "Macro shared hands on handle - strict center on intertwined grips",
+        "crop_center_x": 0.50,
+        "crop_center_y": 0.50
+    },
+    "shot_07": {
+        "desc": "Ato Berhanu demonstrating doma swing - bias slightly right to include elder and falling blade",
+        "crop_center_x": 0.54,
+        "crop_center_y": 0.42
+    },
+    "shot_08": {
+        "desc": "Kaleb smiling with effortless swing - upper body and furrow",
+        "crop_center_x": 0.50,
+        "crop_center_y": 0.44
+    },
+    "shot_09": {
+        "desc": "Two figures walking into sunset - wide center keeping both silhouettes intact",
+        "crop_center_x": 0.50,
+        "crop_center_y": 0.52
+    }
+}
+
+
 def render_kenburns_shot(keyframe_path: Path, output_path: Path, shot_cfg: dict, aspect: str = "9:16") -> bool:
     """
-    Render a single shot using FFmpeg Ken Burns engine.
-    For 9:16: crop 1024x1024 to centered 576x1024, zoompan to 1080x1920.
-    For 16:9: crop 1024x1024 to centered 1024x576, zoompan to 1920x1080.
+    Render a single shot using FFmpeg Ken Burns engine with aspect-aware safe framing.
+    For 9:16: crop to safe vertical pillar, targeting focal action without lopping heads or tools.
+    For 16:9: crop to safe horizontal letterbox, ensuring full landscape horizon and tool swing headroom.
     """
     shot_id = shot_cfg["shot_id"]
     duration_s = float(shot_cfg["duration_s"])
@@ -161,16 +212,28 @@ def render_kenburns_shot(keyframe_path: Path, output_path: Path, shot_cfg: dict,
         "y": "ih/2-(ih/zoom/2)"
     })
 
+    framing = FRAMING_PROFILES.get(shot_id, {
+        "crop_center_x": 0.5,
+        "crop_center_y": 0.5
+    })
+
     z_expr = profile["z"].format(total_frames=total_frames)
     x_expr = profile["x"].format(total_frames=total_frames)
     y_expr = profile["y"].format(total_frames=total_frames)
 
+    # Ingest image dimensions via FFprobe or default 1024x1024 / 1024x576
+    # Calculate aspect-aware crop with padding protection
     if aspect == "9:16":
         out_w, out_h = 1080, 1920
-        pre_crop = "crop=576:1024:(in_w-576)/2:0"
+        # Horizontal crop window: 9/16 aspect ratio relative to input height
+        # in_w * (9/16) or in_h * (9/16)
+        crop_x_offset = f"(in_w - in_h*9/16)*{framing['crop_center_x']}"
+        pre_crop = f"crop=in_h*9/16:in_h:{crop_x_offset}:0"
     else:  # 16:9
         out_w, out_h = 1920, 1080
-        pre_crop = "crop=1024:576:0:(in_h-576)/2"
+        # Vertical crop window: 16/9 aspect ratio relative to input width
+        crop_y_offset = f"(in_h - in_w*9/16)*{framing['crop_center_y']}"
+        pre_crop = f"crop=in_w:in_w*9/16:0:{crop_y_offset}"
 
     vf_filter = (
         f"{pre_crop},"

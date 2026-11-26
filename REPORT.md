@@ -1,6 +1,6 @@
 # The Heritage Short — AI-Content Generation Challenge
 ## Written Analytical Report: Technical & Creative Synthesis
-**Project:** *The Weight of the Handle (የእጁ ሚስጥር)*  
+**Project:** *"የማያውቁት ነገር ላብ ያበረክታል"* (*"What one does not know brings much sweat and toil"*).  
 **Core Narrative:** Traditional Ethiopian Amharic Proverb: *"የማያውቁት ነገር ላብ ያበረክታል"* (*"What one does not know brings much sweat and toil"*).  
 **Deliverable Scope:** Assignment 1 (Codebase, Pipeline & Analytical Report) & Assignment 2 (Films, Walkthrough & Post).  
 **Repository Location:** `the-heritage-short` (`main` branch)

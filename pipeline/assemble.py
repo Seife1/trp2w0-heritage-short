@@ -33,7 +33,7 @@ ENGLISH_TRANSLATIONS = {
     "shot_03": "His palms tore and his breath grew ragged. Muscle alone found no path.",
     "shot_04": "Toil without method brings only exhaustion: 'What one does not know brings much sweat.'",
     "shot_05": "His grandfather, Ato Berhanu, observed quietly from afar, then stepped forward.",
-    "shot_06": "'My son, do not clench your grip; let the tool\\'s own weight do the work.'",
+    "shot_06": "'My son, do not clench your grip; let the tool's own weight do the work.'",
     "shot_07": "Raised with calm balance, the doma sliced deep into the earth under its own momentum.",
     "shot_08": "Finding the balance, Kaleb felt the burden lift, and the earth yielded with ease.",
     "shot_09": "Knowledge elevates strength to grace, ensuring no honest labor is spent in vain."
@@ -394,8 +394,8 @@ Style: SubStyle,Nyala,{sub_size},&H00AAAAAA,&H000000FF,&H00000000,&H80000000,0,0
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-Dialogue: 0,{st},{et},TitleStyle,,0,0,0,,THE HERITAGE SHORT\\N{{\\fs{title_size-6}\\c&H00D4AF37&}}የእጁ ሚስጥር
-Dialogue: 0,{st},{et},BodyStyle,,0,0,0,,\\N\\N\\N\\NCreated with AI for Educational & Cultural Preservation
+Dialogue: 0,{st},{et},TitleStyle,,0,0,0,,\"የማያውቁት ነገር ላብ ያበረክታል\"\\N{{\\fs{title_size-14}\\c&H00D4AF37&}}\"What one does not know brings much sweat and toil.\"
+Dialogue: 0,{st},{et},BodyStyle,,0,0,0,,\\N\\N\\N\\NCreated with AI for Cultural & Educational Preservation
 Dialogue: 0,{st},{et},SubStyle,,0,0,0,,\\N\\N\\N\\N\\N\\NVisuals: FLUX.1 schnell & Leonardo AI Phoenix\\NNarration: Gemini 3.8 Flash TTS (Charon & Algenib)\\NMusic: Acoustic Ethiopian Synthesis (Krar, Begena, Washint, Kebero)
 """
     with open(ass_path, "w", encoding="utf-8") as f:

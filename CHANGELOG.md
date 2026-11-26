@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Aspect-Aware Cinematic Safe Framing (`pipeline/shots.py`):**
+  - Integrated `FRAMING_PROFILES` with shot-specific normalized anchor offsets ($x, y$) preventing tool-head and character clipping across `9:16` vertical mobile feeds and `16:9` widescreen.
+  - Balanced two-character mentorship interaction (Shots 05, 06, 07, 09) within safe visual margins.
+- **Title Harmonization & Enhanced Bilingual End Card:**
+  - Standardized official film title to `"የማያውቁት ነገር ላብ ያበረክታል"` across `storyboard.json`, documentation, and metadata.
+  - Rendered updated 2.5s Ethical AI Disclosure End Card with gold Amharic quotation title and English translation (*"What one does not know brings much sweat and toil."*).
+- **Golden Visual Reference Integration:**
+  - Ingested golden character and landscape reference sheets into `outputs/references/`.
 - **Single-Command Pipeline Entrypoint (`run.py`):**
   - Built stranger-friendly unified CLI providing one-command end-to-end reproducibility (`python run.py`).
   - Added `--dry-run` flag to audit schema validity, asset health, and contract durations without triggering network calls or consuming API quotas.
