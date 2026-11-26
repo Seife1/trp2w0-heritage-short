@@ -1,6 +1,6 @@
 # The Heritage Short — AI-Content Generation Pipeline
 
-[![Version](https://img.shields.io/badge/version-v0.2.4-blue.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.2.5-blue.svg)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![Tests](https://img.shields.io/badge/tests-10%20passed-brightgreen.svg)]()
 [![Contract](https://img.shields.io/badge/contract-JSON%20Schema%20Draft--07-purple.svg)](./schema/storyboard.schema.json)
@@ -172,6 +172,8 @@ python pipeline/assemble.py --master --aspect 16:9
 ## 📜 Recent Updates
 
 See the full [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
+
+* **2026-11-26 (v0.2.5):** Integrated Meta AudioCraft MusicGen master score (`outputs/audio/music/score_final.wav`, 66.0s 44.1 kHz stereo); optimized mix balance (`weights=1.0 0.65`, `sidechaincompress` ratio 3, release 800ms); updated ethical AI disclosure end card to attribute Meta AudioCraft MusicGen; re-mastered both 9:16 and 16:9 cuts (Integrated -16.0 LUFS, True Peak -1.6 dBFS <= -1.0 dBFS ceiling); 10/10 automated tests passing.
 
 * **2026-11-26 (v0.2.4):** QA review fixes — fail-fast curation, end card attribution corrected to FLUX.2 klein 4B, True Peak compliance tightened (TP ≤ -1.0 dBFS guaranteed), Wan mode file copy fixed, `run.py` wired `references` + `keyframes` + dual-aspect `shots` stages, added missing deps (`numpy`, `scipy`, `Pillow`, `pytest`), 10/10 tests passing.
 

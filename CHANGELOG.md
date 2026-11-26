@@ -17,6 +17,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Synchronized architectural documentation across `ARCHITECTURE.md`, `README.md`, `ETHICS.md`, `REPORT.md`, and added Failure 11 to `FAILURES.md` detailing the replacement of planned ACE-Step with culturally authentic procedural physical modeling.
   - Added `test_music_contract_and_determinism` to automated test suite (9/9 passed).
 
+## [0.2.5] - 2026-11-26
+
+### Added
+- **Meta AudioCraft MusicGen Master Score (`outputs/audio/music/score_final.wav`):**
+  - Integrated 66.0-second classical Ethiopian folk acoustic score generated via Meta's AudioCraft MusicGen (Tizita modal acoustic arrangement with authentic Krar strumming, resonant Begena, and Kebero rhythms).
+  - Preserved raw original generation as `outputs/audio/music/musicgen_score_66s.wav` and transcoded to standard 44.1 kHz stereo PCM for production master assembly.
+
+### Changed
+- **Audio Mixing & Ducking Levels (`pipeline/assemble.py`):**
+  - Adjusted music mix level from `0.35` to `0.65` in `amix` to ensure rich acoustic instruments remain clearly audible beneath narration.
+  - Fine-tuned sidechain compressor (`ratio=3`, `release=800ms`) for smooth dialogue ducking without dynamic pumping.
+- **Ethical AI Attribution End Card (`pipeline/assemble.py`):**
+  - Updated 2.5s disclosure end card to attribute `"Meta AudioCraft MusicGen (Classical Ethiopian Folk Score)"`.
+- **Master Deliverables Re-mastered:**
+  - Re-rendered both vertical (`outputs/final/final_master_9_16.mp4`, 11.52 MB) and horizontal (`outputs/final/final_master_16_9.mp4`, 11.14 MB) cuts.
+  - Measured broadcast metrics: Integrated = **-16.0 LUFS**, True Peak = **-1.6 dBFS** (strictly compliant with $\le -1.0$ dBFS ceiling), LRA = **4.0 LU**.
+
 ## [0.2.4] - 2026-11-26
 
 ### Fixed

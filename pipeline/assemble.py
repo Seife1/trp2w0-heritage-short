@@ -344,8 +344,8 @@ def build_rough_cut(aspect: str = "9:16") -> bool:
         "-i", str(score_path),
         "-filter_complex",
         f"[0:v]subtitles='{ass_filter_path}'[subbed_v];"
-        "[2:a][1:a]sidechaincompress=threshold=0.035:ratio=4:attack=150:release=1000[ducked_score];"
-        "[1:a][ducked_score]amix=inputs=2:weights=1.0 0.35:normalize=0[mixed_audio]",
+        "[2:a][1:a]sidechaincompress=threshold=0.035:ratio=3:attack=150:release=800[ducked_score];"
+        "[1:a][ducked_score]amix=inputs=2:weights=1.0 0.65:normalize=0[mixed_audio]",
         "-map", "[subbed_v]",
         "-map", "[mixed_audio]",
         "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "24",
@@ -400,7 +400,7 @@ Style: SubStyle,Nyala,{sub_size},&H00AAAAAA,&H000000FF,&H00000000,&H80000000,0,0
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 Dialogue: 0,{st},{et},TitleStyle,,0,0,0,,\"የማያውቁት ነገር ላብ ያበረክታል\"\\N{{\\fs{title_size-14}\\c&H00D4AF37&}}\"What one does not know brings much sweat and toil.\"
 Dialogue: 0,{st},{et},BodyStyle,,0,0,0,,\\N\\N\\N\\NCreated with AI for Cultural & Educational Preservation
-Dialogue: 0,{st},{et},SubStyle,,0,0,0,,\\N\\N\\N\\N\\N\\NVisuals: FLUX.2 klein 4B (Cloudflare Workers AI)\\NNarration: Gemini 3.8 Flash TTS (Charon & Algenib)\\NMusic: Acoustic Ethiopian Synthesis (Krar, Begena, Washint, Kebero)
+Dialogue: 0,{st},{et},SubStyle,,0,0,0,,\\N\\N\\N\\N\\N\\NVisuals: FLUX.2 klein 4B (Cloudflare Workers AI)\\NNarration: Gemini 3.8 Flash TTS (Charon & Algenib)\\NMusic: Meta AudioCraft MusicGen (Classical Ethiopian Folk Score)
 """
     with open(ass_path, "w", encoding="utf-8") as f:
         f.write(ass_text)
