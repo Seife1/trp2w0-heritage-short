@@ -52,13 +52,14 @@ Visual consistency across generative image models is notorious for breaking down
 2. **Model Trade-offs:** FLUX.1 schnell excelled at capturing raw human exhaustion and facial perspiration, but compressed the landscape and generated forked tool heads. Leonardo AI Phoenix generated breathtaking panoramic terraced hills and intricate cotton weaves on Ato Berhanu’s Gabi, but produced static poses during action shots.
 3. **Hard Free-Tier Ceiling:** Cloudflare Workers AI free tier imposes a strict 10,000 daily Neurons ceiling (`AiError: code 4006`), which blocked regenerating all 18 frames repeatedly.
 
-### The Resolution: The Hybrid Curation Engine (`pipeline/curate.py`)
-Rather than blindly settling for a single flawed model set or spending paid credits, we engineered a programmatic curation architecture:
-* **Algorithmic Asset Mapping:** We built `pipeline/curate.py` to assemble the winning frames from both models based on a 5-pillar rubric:
-  - *Leonardo Phoenix:* Selected for wide landscape depth (Shot 1), downward strike physics (Shot 2), traditional Netela/Gabi textile weave (Shot 5), mentorship framing (Shot 6), clean soil turnover (Shot 8), and sunset companionship (Shot 9).
-  - *FLUX.1 schnell:* Selected for strained knuckle grip and emotional tension (Shot 3), exhaustion pose (Shot 4), and elder wisdom poise (Shot 7).
-* **Automated Traceability:** Generated `outputs/keyframes_curated/curation_manifest.json` recording the exact selection rationale and SHA-256 checksums.
-* **Pipeline Integration:** Downstream video rendering (`pipeline/shots.py`) automatically detects and ingests the curated sequence, allowing us to deliver clean master cuts with zero budget.
+### The Resolution: Multi-Reference Image Conditioning (`FLUX.2 [klein] 4B`) & Curated Sequence
+Rather than settling for text-only generative models or spending paid credits, we engineered an iterative curation and conditioning architecture:
+* **Evolution from Text-Only A/B to Multipart Image Conditioning:**
+  - *Initial A/B Baselines:* We initially evaluated `@cf/black-forest-labs/flux-1-schnell` (strengths in raw human fatigue and sweat) vs. `@cf/leonardo/phoenix-1.0` (strengths in wide landscape depth and textile patterns).
+  - *Multi-Reference Promotion (FLUX.2 klein 4B):* We introduced and promoted `@cf/black-forest-labs/flux-2-klein-4b` via `multipart/form-data` passing up to 4 cropped visual tokens (`input_image_0..3`). This anchored character identity (Kaleb, Ato Berhanu), the Doma hoe's asymmetric single blade, and terraced highland terrain directly to pixel-level reference sheets.
+* **Algorithmic Asset Mapping & Manifest:**
+  - `pipeline/curate.py` maps the winning keyframes into `outputs/keyframes_curated/`, generating `outputs/keyframes_curated/curation_manifest.json` recording the exact model selection rationale, dimensions (1024×1024), and SHA-256 checksums.
+* **Pipeline Integration & Zero-Cost Delivery:** Downstream video rendering (`pipeline/shots.py`) automatically ingests the curated sequence, enabling clean 24fps master cuts with zero marginal API spend within free-tier quota limits.
 
 ---
 
@@ -87,10 +88,10 @@ As part of our exploration beyond the floor, we benchmarked our open-tier, zero-
 
 - [x] **Contract Duration:** 68.11s total (65.50s narrative + 2.5s end card), strictly within the 60.0s – 90.0s requirement.
 - [x] **Dual Aspect Export:**
-  - Vertical Master (`9:16`): `outputs/final/final_master_9_16.mp4` (11.18 MB)
-  - Horizontal Master (`16:9`): `outputs/final/final_master_16_9.mp4` (10.27 MB)
-- [x] **Audio Standards:** Two-pass `-14.44 LUFS` integrated loudness, True Peak `-0.74 dBFS`, dynamic sidechain ducking (-8 to -10 dB).
+  - Vertical Master (`9:16`): `outputs/final/final_master_9_16.mp4` (12.06 MB)
+  - Horizontal Master (`16:9`): `outputs/final/final_master_16_9.mp4` (11.65 MB)
+- [x] **Audio Standards:** Two-pass `-14.0 LUFS` integrated loudness, True Peak $\le -1.0\text{ dBFS}$, dynamic sidechain ducking (-8 to -10 dB).
 - [x] **Subtitles:** Dual Amharic (Gold) & English (White) burned-in subtitles rendered with DirectWrite `Nyala` within safe viewing zones.
 - [x] **Ethical AI Card:** 2.5s disclosure end card appended to both master files citing all models used.
 - [x] **Reproducibility:** One-command unified runner `python run.py` (with `--dry-run` and `--stage` options).
-- [x] **Documentation Complete:** `README.md`, `ARCHITECTURE.md`, `DESIGN.md`, `EXPERIMENTS.md` (10 entries), `FAILURES.md`, `COSTS.md`, `ETHICS.md`, and `CHANGELOG.md`.
+- [x] **Documentation Complete:** `README.md`, `ARCHITECTURE.md`, `DESIGN.md`, `EXPERIMENTS.md` (14 entries), `FAILURES.md` (10 entries), `COSTS.md`, `ETHICS.md`, and `CHANGELOG.md`.
