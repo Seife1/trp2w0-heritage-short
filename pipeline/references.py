@@ -14,8 +14,22 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 KEYFRAMES_DIR = PROJECT_ROOT / "outputs" / "keyframes"
+REFERENCES_DIR = PROJECT_ROOT / "outputs" / "references"
 RUNS_LOG_PATH = PROJECT_ROOT / "runs.jsonl"
 STORYBOARD_PATH = PROJECT_ROOT / "storyboard.json"
+
+# Visual token asset registry extracted from golden asset sheets
+TOKEN_ASSETS = {
+    "kaleb": REFERENCES_DIR / "token_kaleb.jpg",
+    "ato_berhanu": REFERENCES_DIR / "token_ato_berhanu.jpg",
+    "doma": REFERENCES_DIR / "token_doma.jpg",
+    "injured_palm": REFERENCES_DIR / "token_injured_palm.jpg",
+    "landscape": REFERENCES_DIR / "token_landscape.jpg",
+    "rural_house": REFERENCES_DIR / "token_rural_house.jpg",
+    "acacia_tree": REFERENCES_DIR / "token_acacia_tree.jpg",
+    "storyboard_grid": REFERENCES_DIR / "storyboard_golden_reference.jpg",
+    "assets_sheet": REFERENCES_DIR / "character_assets_sheet.jpg"
+}
 
 
 def get_cloudflare_creds() -> tuple[str, str]:

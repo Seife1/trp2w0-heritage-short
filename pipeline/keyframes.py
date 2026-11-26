@@ -180,7 +180,14 @@ def run_keyframe_pipeline(model_type: str = "flux", force: bool = False, shot_fi
         else:
             full_prompt = f"{shot['keyframe_prompt']}, {style_block}"
 
-        content_hash = hashlib.sha256((full_prompt + model_type).encode("utf-8")).hexdigest()
+        # Cache check with visual token hash integration
+        token_hash_component = ""
+        for r in refs_involved:
+            t_path = PROJECT_ROOT / "outputs" / "references" / f"token_{r}.jpg"
+            if t_path.exists():
+                token_hash_component += t_path.name + str(t_path.stat().st_mtime)
+
+        content_hash = hashlib.sha256((full_prompt + model_type + token_hash_component).encode("utf-8")).hexdigest()
 
         # Cache check
         if not force and out_file.exists() and hash_file.exists():

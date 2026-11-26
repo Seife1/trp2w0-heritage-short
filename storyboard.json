@@ -6,8 +6,12 @@
   "target_duration_s": 65.5,
   "style_block": "Cinematic photorealistic 35mm film still, authentic Ethiopian highland rural setting, natural earthy tones (ochre soil, weathered acacia wood, off-white handwoven cotton Gabi), subtle atmospheric dust, shallow depth of field, 24fps film grain, highly detailed skin textures and fabric weaves, centered composition suitable for 9:16 and 16:9 crops, no modern artifacts.",
   "character_refs": {
-    "kaleb": "17-year-old Ethiopian young man with short curly black hair, lean muscular build, dusty weathered beige linen tunic with rolled-up sleeves, worn brown leather sandals. Holding one single traditional Ethiopian agricultural tool (Doma): a straight weathered acacia wooden handle with a single pointed iron digging blade securely fitted at the end. No axe head, no double blades, no hammer, no extra tools.",
-    "ato_berhanu": "70-year-old Ethiopian elder with a neatly trimmed silver-gray beard, deeply lined sun-weathered face, calm warm eyes, draped in a heavy off-white handwoven cotton Gabi with a subtle woven earth-toned border over a simple white cotton tunic."
+    "kaleb": "17-year-old lean Ethiopian highland farmer with short curly black textured hair, high cheekbones, wearing a dusty rough homespun earthen-tan cotton tunic with open V-neck, sweat glistening on forehead (token_kaleb.jpg)",
+    "ato_berhanu": "70-year-old wise Ethiopian elder with a neatly trimmed silver-gray beard, deeply lined sun-weathered face, draped in a heavy off-white handwoven cotton Gabi with an intricate geometric red-and-gold woven Tibeb border (token_ato_berhanu.jpg)",
+    "doma": "Traditional Ethiopian agricultural hand-hoe (doma) with a forged dark iron adze blade securely fitted via a metal collar ring to a straight weathered eucalyptus wooden handle, strictly single blade with no axe head (token_doma.jpg)",
+    "injured_palm": "Close-up macro of blistered and dirt-stained palm (medaf) with raw chafed skin from grueling agricultural labor (token_injured_palm.jpg)",
+    "landscape": "Authentic Ethiopian highland terraced fields with dry furrowed soil, stone boundary walls, and rolling acacia-dotted hills (token_landscape.jpg)",
+    "rural_house": "Traditional rural highland stone-and-mud house with corrugated iron roof and dry stone terrace wall (token_rural_house.jpg)"
   },
   "music_cues": [
     {
