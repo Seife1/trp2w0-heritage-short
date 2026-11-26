@@ -1,8 +1,8 @@
 # The Heritage Short — AI-Content Generation Pipeline
 
-[![Version](https://img.shields.io/badge/version-v0.1.0-blue.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.2.0-blue.svg)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
-[![Tests](https://img.shields.io/badge/tests-7%20passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-8%20passed-brightgreen.svg)]()
 [![Contract](https://img.shields.io/badge/contract-JSON%20Schema%20Draft--07-purple.svg)](./schema/storyboard.schema.json)
 [![Status](https://img.shields.io/badge/status-active%20development-brightgreen.svg)]()
 
@@ -172,6 +172,7 @@ python pipeline/assemble.py --master --aspect 16:9
 
 See the full [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
 
+* **2026-11-26 (v0.2.0):** Added `--model klein` (`@cf/black-forest-labs/flux-2-klein-4b`) with real pixel-level image conditioning via `multipart/form-data` (`input_image_0..3`). All 9 keyframes regenerated with up to 4 visual reference tokens. `curate.py` promoted klein as primary model. Test suite expanded to 8/8 passing.
 * **2026-11-26:** Implemented automated test suite (`tests/test_pipeline.py`) with 7/7 passing tests, integrated visual token auto-extraction, and verified end-to-end execution via `python run.py`.
 * **2026-11-26:** Implemented aspect-aware cinematographic safe framing (`FRAMING_PROFILES`) and updated title to `"የማያውቁት ነገር ላብ ያበረክታል"`.
 * **2026-11-25:** Implemented single-entrypoint runner `run.py` supporting one-command end-to-end execution, `--dry-run` health checks, and granular `--stage` invocation.

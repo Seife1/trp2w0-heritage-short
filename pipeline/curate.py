@@ -2,18 +2,22 @@
 Keyframe Curation Engine for The Heritage Short.
 
 Assembles the optimal hybrid master keyframe sequence into outputs/keyframes_curated/
-by evaluating the A/B test results between FLUX.1 schnell and Leonardo AI Phoenix 1.0:
+by evaluating results across three generation models:
+  - Model A (flux):     FLUX.1 schnell          — text-to-image, no reference images
+  - Model B (leonardo): Leonardo AI Phoenix 1.0  — text-to-image, no reference images
+  - Model C (klein):    FLUX.2 [klein] 4B        — image-conditioned via multipart/form-data
+                        (up to 4 reference images: input_image_0..3)
 
-Curated Selection:
-- Shot 01: Leonardo Phoenix (Expansive terraced highland landscape depth)
-- Shot 02: Leonardo Phoenix (Clear downward agricultural strike into rocky soil)
-- Shot 03: FLUX.1 schnell (Strained knuckle grip and sweat glistening under tension)
-- Shot 04: FLUX.1 schnell (Authentic physical exhaustion and resting on doma)
-- Shot 05: Leonardo Phoenix (Detailed handwoven Gabi fabric texture and dignified elder poise)
-- Shot 06: Leonardo Phoenix (Mentor & apprentice holding wooden shaft with anatomical clarity)
-- Shot 07: FLUX.1 schnell (Ato Berhanu demonstrating fluid effortless momentum)
-- Shot 08: Leonardo Phoenix (Clear figure contouring and clean soil turnover)
-- Shot 09: Leonardo Phoenix (Grandfather & grandson walking along dirt path into twilight)
+Curated Selection (v2 — klein promoted to primary for character-critical shots):
+- Shot 01: FLUX.2 klein 4B  (kaleb + landscape refs → landscape depth with consistent Kaleb silhouette)
+- Shot 02: FLUX.2 klein 4B  (kaleb + doma refs → downward strike with correct tool form)
+- Shot 03: FLUX.2 klein 4B  (kaleb + doma refs → strained grip with consistent hand anatomy)
+- Shot 04: FLUX.2 klein 4B  (kaleb + doma refs → exhaustion pose with consistent figure)
+- Shot 05: FLUX.2 klein 4B  (ato_berhanu ref → lifelike Gabi fabric and elder bearing)
+- Shot 06: FLUX.2 klein 4B  (ato_berhanu + kaleb + doma refs → mentorship hands on shaft)
+- Shot 07: FLUX.2 klein 4B  (ato_berhanu + doma refs → effortless demonstration)
+- Shot 08: FLUX.2 klein 4B  (kaleb + doma refs → realization swing with consistent figure)
+- Shot 09: FLUX.2 klein 4B  (ato_berhanu + kaleb + doma + landscape refs → sunset walk)
 """
 
 import json
@@ -24,53 +28,54 @@ from PIL import Image
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 KEYFRAMES_FLUX_DIR = PROJECT_ROOT / "outputs" / "keyframes"
 KEYFRAMES_LEO_DIR = PROJECT_ROOT / "outputs" / "keyframes_leonardo"
+KEYFRAMES_KLEIN_DIR = PROJECT_ROOT / "outputs" / "keyframes_klein"
 CURATED_DIR = PROJECT_ROOT / "outputs" / "keyframes_curated"
 
 CURATION_MAP = {
     "shot_01": {
-        "model": "Leonardo AI Phoenix 1.0",
-        "source": KEYFRAMES_LEO_DIR / "shot_01.jpg",
-        "rationale": "Superior panoramic terraced landscape depth and natural acacia tree distribution."
+        "model": "FLUX.2 [klein] 4B",
+        "source": KEYFRAMES_KLEIN_DIR / "shot_01.jpg",
+        "rationale": "Image-conditioned on kaleb + landscape tokens: consistent Kaleb silhouette anchored in authentic terraced highland setting."
     },
     "shot_02": {
-        "model": "Leonardo AI Phoenix 1.0",
-        "source": KEYFRAMES_LEO_DIR / "shot_02.jpg",
-        "rationale": "Clear downward strike momentum cutting into rocky furrow."
+        "model": "FLUX.2 [klein] 4B",
+        "source": KEYFRAMES_KLEIN_DIR / "shot_02.jpg",
+        "rationale": "Image-conditioned on kaleb + doma tokens: correct tool form (single iron adze blade) and consistent figure identity."
     },
     "shot_03": {
-        "model": "FLUX.1 schnell",
-        "source": KEYFRAMES_FLUX_DIR / "shot_03.png",
-        "rationale": "Strongest emotional tension, strained knuckle grip, and authentic fatigue."
+        "model": "FLUX.2 [klein] 4B",
+        "source": KEYFRAMES_KLEIN_DIR / "shot_03.jpg",
+        "rationale": "Image-conditioned on kaleb + doma tokens: strained grip with consistent Kaleb hand anatomy and tool handle."
     },
     "shot_04": {
-        "model": "FLUX.1 schnell",
-        "source": KEYFRAMES_FLUX_DIR / "shot_04.png",
-        "rationale": "Pivotal exhaustion pose resting on doma, matching proverb delivery perfectly."
+        "model": "FLUX.2 [klein] 4B",
+        "source": KEYFRAMES_KLEIN_DIR / "shot_04.jpg",
+        "rationale": "Image-conditioned on kaleb + doma tokens: pivotal exhaustion pose with deterministic character appearance."
     },
     "shot_05": {
-        "model": "Leonardo AI Phoenix 1.0",
-        "source": KEYFRAMES_LEO_DIR / "shot_05.jpg",
-        "rationale": "Lifelike coarse cotton weave on Ato Berhanu's Gabi with fringed borders."
+        "model": "FLUX.2 [klein] 4B",
+        "source": KEYFRAMES_KLEIN_DIR / "shot_05.jpg",
+        "rationale": "Image-conditioned on ato_berhanu token: lifelike Gabi fabric weave and elder bearing locked to reference sheet."
     },
     "shot_06": {
-        "model": "Leonardo AI Phoenix 1.0",
-        "source": KEYFRAMES_LEO_DIR / "shot_06.jpg",
-        "rationale": "Intimate mentorship beat with elder and youth sharing the wooden handle."
+        "model": "FLUX.2 [klein] 4B",
+        "source": KEYFRAMES_KLEIN_DIR / "shot_06.jpg",
+        "rationale": "Image-conditioned on ato_berhanu + kaleb + doma tokens (3 refs): closest to authentic mentorship hand anatomy on correct tool."
     },
     "shot_07": {
-        "model": "FLUX.1 schnell",
-        "source": KEYFRAMES_FLUX_DIR / "shot_07.png",
-        "rationale": "Wise elder expression and poised demonstration of effortless technique."
+        "model": "FLUX.2 [klein] 4B",
+        "source": KEYFRAMES_KLEIN_DIR / "shot_07.jpg",
+        "rationale": "Image-conditioned on ato_berhanu + doma tokens: consistent elder identity demonstrating effortless technique."
     },
     "shot_08": {
-        "model": "Leonardo AI Phoenix 1.0",
-        "source": KEYFRAMES_LEO_DIR / "shot_08.jpg",
-        "rationale": "Clean figure separation and dark fertile soil breaking open smoothly."
+        "model": "FLUX.2 [klein] 4B",
+        "source": KEYFRAMES_KLEIN_DIR / "shot_08.jpg",
+        "rationale": "Image-conditioned on kaleb + doma tokens: realization swing with deterministic figure and correct single-blade tool."
     },
     "shot_09": {
-        "model": "Leonardo AI Phoenix 1.0",
-        "source": KEYFRAMES_LEO_DIR / "shot_09.jpg",
-        "rationale": "Atmospheric evening twilight walk, strong companionship, 9:16 safe framing."
+        "model": "FLUX.2 [klein] 4B",
+        "source": KEYFRAMES_KLEIN_DIR / "shot_09.jpg",
+        "rationale": "Image-conditioned on ato_berhanu + kaleb + doma + landscape tokens (4 refs): grandfather and grandson sunset walk with full scene anchoring."
     }
 }
 

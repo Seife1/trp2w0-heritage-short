@@ -75,19 +75,45 @@ def test_golden_visual_references_exist():
 
 
 def test_keyframe_deterministic_hashing():
-    """Verify input-hash caching generates stable SHA-256 keys."""
+    """Verify input-hash caching generates stable SHA-256 keys across all 3 models."""
     prompt = "A young farmer working"
     style = "35mm cinematic"
     seed = 42
-    model = "@cf/black-forest-labs/flux-1-schnell"
 
-    hash1 = compute_keyframe_hash(prompt, style, seed, model, ["kaleb", "doma"])
-    hash2 = compute_keyframe_hash(prompt, style, seed, model, ["kaleb", "doma"])
-    assert hash1 == hash2, "Hashing must be 100% deterministic"
+    for model_id in [
+        "@cf/black-forest-labs/flux-1-schnell",
+        "@cf/leonardo/phoenix-1.0",
+        "@cf/black-forest-labs/flux-2-klein-4b",
+    ]:
+        h1 = compute_keyframe_hash(prompt, style, seed, model_id, ["kaleb", "doma"])
+        h2 = compute_keyframe_hash(prompt, style, seed, model_id, ["kaleb", "doma"])
+        assert h1 == h2, f"Hashing must be 100% deterministic for {model_id}"
 
-    # Modifying prompt must change hash
-    hash3 = compute_keyframe_hash(prompt + " modified", style, seed, model, ["kaleb", "doma"])
-    assert hash1 != hash3, "Prompt change must invalidate cache"
+        # Modifying prompt must change hash
+        h3 = compute_keyframe_hash(prompt + " modified", style, seed, model_id, ["kaleb", "doma"])
+        assert h1 != h3, f"Prompt change must invalidate cache for {model_id}"
+
+    # Different models must yield different hashes for the same prompt
+    h_flux = compute_keyframe_hash(prompt, style, seed, "@cf/black-forest-labs/flux-1-schnell", ["kaleb"])
+    h_klein = compute_keyframe_hash(prompt, style, seed, "@cf/black-forest-labs/flux-2-klein-4b", ["kaleb"])
+    assert h_flux != h_klein, "Different models must produce different cache keys"
+
+
+def test_klein_resolve_reference_tokens():
+    """Verify resolve_reference_tokens returns correct token paths for klein model."""
+    from pipeline.keyframes import resolve_reference_tokens
+    # Shot 02: kaleb + doma keyword in prompt → should include doma token
+    tokens = resolve_reference_tokens(["kaleb"], "driving the doma downward into soil", "medium")
+    names = [n for n, _ in tokens]
+    assert "kaleb" in names, "kaleb token must be included"
+    assert "doma" in names, "doma must be auto-included for doma keyword in prompt"
+    assert len(tokens) <= 4, "Must not exceed 4 reference images"
+
+    # Shot 09: wide landscape → should auto-add landscape
+    tokens_wide = resolve_reference_tokens(["ato_berhanu", "kaleb"], "highland sunset", "wide")
+    names_wide = [n for n, _ in tokens_wide]
+    assert "landscape" in names_wide, "landscape token must be auto-included for wide shots"
+    assert len(tokens_wide) <= 4, "Must not exceed 4 reference images"
 
 
 def test_aspect_aware_framing_profiles():

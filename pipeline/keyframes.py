@@ -16,6 +16,7 @@ import base64
 import hashlib
 import requests
 import argparse
+from contextlib import ExitStack
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -30,14 +31,48 @@ MODELS_CONFIG = {
     "flux": {
         "model_id": "@cf/black-forest-labs/flux-1-schnell",
         "output_dir": PROJECT_ROOT / "outputs" / "keyframes",
-        "name": "FLUX.1 schnell"
+        "name": "FLUX.1 schnell",
+        "multipart": False,
     },
     "leonardo": {
         "model_id": "@cf/leonardo/phoenix-1.0",
         "output_dir": PROJECT_ROOT / "outputs" / "keyframes_leonardo",
-        "name": "Leonardo AI Phoenix 1.0"
-    }
+        "name": "Leonardo AI Phoenix 1.0",
+        "multipart": False,
+    },
+    "klein": {
+        "model_id": "@cf/black-forest-labs/flux-2-klein-4b",
+        "output_dir": PROJECT_ROOT / "outputs" / "keyframes_klein",
+        "name": "FLUX.2 [klein] 4B (Multi-Ref)",
+        "multipart": True,
+    },
 }
+
+
+def resolve_reference_tokens(refs_involved: list[str], keyframe_prompt: str = "", shot_type: str = "") -> list[tuple[str, Path]]:
+    """
+    Resolve up to 4 visual reference token files (<=512x512) for image-conditioned generation.
+    Prioritizes explicit character_refs, then adds doma/landscape tokens when relevant.
+    """
+    ordered_names = list(refs_involved or [])
+    prompt_lower = keyframe_prompt.lower()
+    if ("doma" in prompt_lower or "pickaxe" in prompt_lower or "handle" in prompt_lower) and "doma" not in ordered_names:
+        ordered_names.append("doma")
+    if shot_type == "wide" and "landscape" not in ordered_names:
+        ordered_names.append("landscape")
+
+    resolved = []
+    seen = set()
+    for name in ordered_names:
+        if name in seen:
+            continue
+        t_path = PROJECT_ROOT / "outputs" / "references" / f"token_{name}.jpg"
+        if t_path.exists():
+            resolved.append((name, t_path))
+            seen.add(name)
+        if len(resolved) >= 4:
+            break
+    return resolved
 
 
 def get_cloudflare_creds() -> tuple[str, str]:
@@ -95,21 +130,43 @@ def log_run(stage: str, model: str, params: dict, latency_s: float, status: str,
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def generate_keyframe(prompt: str, output_path: Path, account_id: str, token: str, model_type: str = "flux", max_retries: int = 3) -> tuple[bool, float]:
+def generate_keyframe(
+    prompt: str,
+    output_path: Path,
+    account_id: str,
+    token: str,
+    model_type: str = "flux",
+    ref_tokens: list[tuple[str, Path]] = None,
+    max_retries: int = 3,
+) -> tuple[bool, float]:
     cfg = MODELS_CONFIG[model_type]
     model_id = cfg["model_id"]
     url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/{model_id}"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-    payload = {"prompt": prompt}
+    is_multipart = cfg.get("multipart", False)
 
     total_latency = 0.0
     for attempt in range(1, max_retries + 1):
         start_time = time.time()
         try:
-            resp = requests.post(url, headers=headers, json=payload, timeout=60)
+            if is_multipart:
+                headers = {"Authorization": f"Bearer {token}"}
+                with ExitStack() as stack:
+                    files = {
+                        "prompt": (None, prompt),
+                        "width": (None, "1024"),
+                        "height": (None, "1024"),
+                    }
+                    for idx, (_, ref_path) in enumerate((ref_tokens or [])[:4]):
+                        fh = stack.enter_context(open(ref_path, "rb"))
+                        files[f"input_image_{idx}"] = (ref_path.name, fh, "image/jpeg")
+                    resp = requests.post(url, headers=headers, files=files, timeout=90)
+            else:
+                headers = {
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json"
+                }
+                payload = {"prompt": prompt}
+                resp = requests.post(url, headers=headers, json=payload, timeout=60)
             latency = time.time() - start_time
             total_latency += latency
 
@@ -187,12 +244,13 @@ def run_keyframe_pipeline(model_type: str = "flux", force: bool = False, shot_fi
         if shot_filter and shot_id != shot_filter:
             continue
 
-        ext = ".png" if model_type == "flux" else ".jpg"
+        ext = ".png" if model_type == "flux" else ".jpg"  # klein → .jpg (direct binary from CF)
         out_file = out_dir / f"{shot_id}{ext}"
         hash_file = out_dir / f"{shot_id}.hash"
 
         # Build conditioned prompt linking character anchor + shot visual prompt + style block
         refs_involved = shot.get("character_refs", [])
+        resolved_tokens = resolve_reference_tokens(refs_involved, shot.get("keyframe_prompt", ""), shot.get("shot_type", ""))
         char_descriptions = []
         for r in refs_involved:
             if r in char_refs:
@@ -204,14 +262,18 @@ def run_keyframe_pipeline(model_type: str = "flux", force: bool = False, shot_fi
         else:
             full_prompt = f"{shot['keyframe_prompt']}, {style_block}"
 
-        # Cache check with visual token hash integration
-        token_hash_component = ""
-        for r in refs_involved:
-            t_path = PROJECT_ROOT / "outputs" / "references" / f"token_{r}.jpg"
-            if t_path.exists():
-                token_hash_component += t_path.name + str(t_path.stat().st_mtime)
+        if cfg.get("multipart") and resolved_tokens:
+            ref_legend = ", ".join(f"image {i} shows {name}" for i, (name, _) in enumerate(resolved_tokens))
+            full_prompt = f"{full_prompt}. Maintain strict visual consistency with reference tokens ({ref_legend})."
 
-        content_hash = hashlib.sha256((full_prompt + model_type + token_hash_component).encode("utf-8")).hexdigest()
+        token_names_for_hash = [name for name, _ in resolved_tokens] if cfg.get("multipart") else refs_involved
+        content_hash = compute_keyframe_hash(
+            full_prompt,
+            style_block,
+            shot.get("seed", 42),
+            cfg["model_id"],
+            token_names_for_hash,
+        )
 
         # Cache check
         if not force and out_file.exists() and hash_file.exists():
@@ -220,8 +282,16 @@ def run_keyframe_pipeline(model_type: str = "flux", force: bool = False, shot_fi
                     print(f"  [CACHE HIT] {shot_id}: already generated with {model_type}. Skipping.")
                     continue
 
-        print(f"  [GENERATING] {shot_id} ({shot['shot_type']}) with {cfg['name']}...")
-        ok, latency = generate_keyframe(full_prompt, out_file, account_id, token, model_type=model_type)
+        ref_note = f" [refs: {', '.join(n for n, _ in resolved_tokens)}]" if cfg.get("multipart") and resolved_tokens else ""
+        print(f"  [GENERATING] {shot_id} ({shot['shot_type']}) with {cfg['name']}{ref_note}...")
+        ok, latency = generate_keyframe(
+            full_prompt,
+            out_file,
+            account_id,
+            token,
+            model_type=model_type,
+            ref_tokens=resolved_tokens,
+        )
 
         if ok:
             with open(hash_file, "w", encoding="utf-8") as hf:
@@ -253,7 +323,7 @@ def run_keyframe_pipeline(model_type: str = "flux", force: bool = False, shot_fi
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Keyframe Generation Engine")
-    parser.add_argument("--model", choices=["flux", "leonardo"], default="flux", help="Model family to run")
+    parser.add_argument("--model", choices=["flux", "leonardo", "klein"], default="flux", help="Model family to run")
     parser.add_argument("--force", action="store_true", help="Force re-generation even if cached")
     parser.add_argument("--shot", default=None, help="Specific shot to generate (e.g. shot_01)")
 

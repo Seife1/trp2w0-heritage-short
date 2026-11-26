@@ -204,3 +204,35 @@ A minimum of 10 structured experiments are logged here.
   - Prompt-only Hash: Updating a reference image (e.g. refining Kaleb's facial texture or the Doma blade collar) went unnoticed by the cache, requiring manual `--force` re-renders.
   - Token-integrated Hash: Modifying any visual token automatically invalidated exactly the shots referencing that token in `storyboard.json` (`shot.character_refs`), leaving unaffected shots 100% cached.
 - **Decision:** Embed visual token extraction and token-integrated SHA-256 caching into `pipeline/references.py` and `pipeline/keyframes.py`.
+
+---
+
+### Experiment 13: FLUX.2 [klein] 4B Multipart Image-Conditioned Generation vs. Text-Only Models
+- **Date:** 2026-11-26
+- **Target Stage:** Keyframe Generation (`pipeline/keyframes.py`)
+- **Hypothesis:** Switching from `@cf/black-forest-labs/flux-1-schnell` (text-only) to `@cf/black-forest-labs/flux-2-klein-4b` with up to 4 pixel-level reference images passed as `input_image_0..3` via `multipart/form-data` will produce more character-consistent keyframes — matching Kaleb's lean silhouette, Ato Berhanu's Gabi fabric, and the Doma's single iron adze blade — compared to prompt-engineered character descriptions alone.
+- **Fixed Parameters:**
+  - 9 narrative storyboard shots.
+  - Identical `keyframe_prompt` and `style_block` text from `storyboard.json`.
+  - Visual token crops: `token_kaleb.jpg` (256×388), `token_ato_berhanu.jpg` (256×388), `token_doma.jpg` (245×388), `token_landscape.jpg` (368×294) — all well within the 512×512 reference limit.
+  - `resolve_reference_tokens()` auto-assigns up to 4 tokens per shot: explicit `character_refs` + auto-inject `doma` on tool keyword match, `landscape` on wide shots.
+- **Single Variable Changed:** Image conditioning pathway: Text-only JSON payload (`{\"prompt\": \"...\"}`) vs. Multipart form-data with `input_image_0..3` reference crops.
+- **Reference Assignment Per Shot:**
+  | Shot | Refs Injected | Count |
+  |:---|:---|:---:|
+  | shot_01 | kaleb, landscape | 2 |
+  | shot_02 | kaleb, doma | 2 |
+  | shot_03 | kaleb, doma | 2 |
+  | shot_04 | kaleb, doma | 2 |
+  | shot_05 | ato_berhanu | 1 |
+  | shot_06 | ato_berhanu, kaleb, doma | 3 |
+  | shot_07 | ato_berhanu, doma | 2 |
+  | shot_08 | kaleb, doma | 2 |
+  | shot_09 | ato_berhanu, kaleb, doma, landscape | 4 |
+- **Measured Result:**
+  - **Latency:** Average 10.65s per shot (range: 6.69s – 14.75s). Comparable to text-only FLUX (~9–14s) despite multipart overhead.
+  - **Output file sizes:** 689–893 KB per shot at 1024×1024 — higher detail density than FLUX.1 schnell (which caps at 256px internally and upscales).
+  - **Character consistency improvement (qualitative):** Klein keyframes show tighter alignment to Doma's single iron adze blade (Failure 04 artefact — phantom double-blade — did not appear in any of the 9 klein shots). Ato Berhanu's Gabi fabric weave in shot_05 and shot_07 has consistent fold pattern matching the reference token.
+  - **API schema:** `multipart/form-data` required (not JSON). `width` and `height` passed as form text fields. Direct binary image response (not base64 JSON).
+  - **Quota cost:** 9 shots × ~127 neurons per 1024×1024 = ~1,143 neurons (11.4% of 10,000 daily free quota). Budget-safe for full pipeline.
+- **Decision:** Promote `--model klein` as the **primary keyframe model** in `pipeline/curate.py`. Update `CURATION_MAP` to source all 9 curated shots from `outputs/keyframes_klein/`. Retain `--model flux` and `--model leonardo` as archived A/B baselines for scientific comparison. Add `test_klein_resolve_reference_tokens` to test suite (8/8 passing).
