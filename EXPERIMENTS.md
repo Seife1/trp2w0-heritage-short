@@ -236,3 +236,24 @@ A minimum of 10 structured experiments are logged here.
   - **API schema:** `multipart/form-data` required (not JSON). `width` and `height` passed as form text fields. Direct binary image response (not base64 JSON).
   - **Quota cost:** 9 shots × ~127 neurons per 1024×1024 = ~1,143 neurons (11.4% of 10,000 daily free quota). Budget-safe for full pipeline.
 - **Decision:** Promote `--model klein` as the **primary keyframe model** in `pipeline/curate.py`. Update `CURATION_MAP` to source all 9 curated shots from `outputs/keyframes_klein/`. Retain `--model flux` and `--model leonardo` as archived A/B baselines for scientific comparison. Add `test_klein_resolve_reference_tokens` to test suite (8/8 passing).
+
+---
+
+### Experiment 14: Token Caption Strip & Doma Adze Veto Clause Prompt Iteration
+- **Date:** 2026-11-26
+- **Target Stage:** Visual Token Preprocessing (`pipeline/references.py`) & Keyframe Prompt Engineering (`storyboard.json`)
+- **Hypothesis:** If we (a) crop the bottom ~13% caption bar from every reference token image and (b) insert explicit veto clauses (`"flat iron adze blade (NOT an axe head)"`) into every doma-involving prompt, the generated keyframes will eliminate garbled text artefacts and correct the persistent doma → axe misclassification.
+- **Fixed Parameters:**
+  - Model: `@cf/black-forest-labs/flux-2-klein-4b` with `multipart/form-data` reference images.
+  - 9 narrative storyboard shots.
+  - Identical visual token reference assignments (`character_refs`) as Experiment 13.
+- **Single Variable Changed (Two Coupled Changes):**
+  1. Token crop coordinates in `references.py`: portrait bottom from `h * 0.57` → `h * 0.495` (strips caption bar); landscape bottom from `h` → `h * 0.94`.
+  2. Keyframe prompts for shots 01, 02, 04, 07, 08, 09: added explicit doma adze blade description with veto clauses and clothing corrections (e.g., "long tunic reaching to the knees (NOT shorts)").
+- **Measured Result:**
+  - **Token crop sizes:** Portrait tokens shrank from 256×388 → 256×338 px; landscape from 368×294 → 368×252 px. All remain well under the 512×512 API limit.
+  - **Garbled text artefacts:** Eliminated across all 9 regenerated keyframes. Zero occurrences of burned-in label text ("Kaleb", "Ato Berhanu", etc.) that appeared in Experiment 13 outputs.
+  - **Doma rendering accuracy:** Shot 04 and Shot 07 render a correct flat horizontal adze blade. Shot 08 renders a small blade (acceptable, closer to correct). Shot 09 retains a slight pickaxe shape but is within acceptable tolerance.
+  - **Clothing accuracy:** Shot 08 Kaleb now wears a full-length tunic (previously rendered as shorts).
+  - **Final masters rebuilt:** `final_master_9_16.mp4` (11.25 MB, −14.0 LUFS) and `final_master_16_9.mp4` (10.03 MB, −14.0 LUFS) — both pass broadcast loudness spec.
+- **Decision:** Adopt caption-stripped tokens and veto-clause prompts as the production baseline. Document the doma axe/adze shape confusion as a persistent model prior requiring prompt engineering (see Failure 09).

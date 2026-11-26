@@ -13,6 +13,7 @@ All model calls are logged per-execution in `runs.jsonl`. This document summariz
 | **Radio Cut Assembly** | FFmpeg 8.0 | Local CPU (i7) | 7.44s render | 1 render | N/A | Local Compute |
 | **Keyframes (Model A)** | FLUX-1-schnell | Cloudflare AI | ~10.8s / image | 9 images | 96.9s API time | $0.00 (Daily Free Allowance) |
 | **Keyframes (Model B - A/B Test)** | Leonardo Phoenix 1.0 | Cloudflare AI | ~9.6s / image | 9 images | 86.8s API time | $0.00 (Daily Free Allowance) |
+| **Keyframes (Model C - Primary)** | FLUX.2 klein 4B (image-conditioned) | Cloudflare AI | ~10.7s / image | 9 images (×2 iterations) | ~192s API time | $0.00 (~1,143 neurons/run; 11.4% of 10K daily free) |
 | **Moving Shots** | Ken Burns / FFmpeg 8.0 | Local CPU (i7) | ~4.6s / shot | 18 clips (9x 9:16, 9x 16:9) | 88.6s compute | Local Compute |
 | **Music Score** | Ethiopian Acoustic Synth | Local CPU (i7) | ~3.8s / candidate | 3 candidates + eval | 11.4s compute | Local Compute |
 | **Rough Cut Assembly** | FFmpeg 8.0 (libass + directwrite) | Local CPU (i7) | ~38.7s / render | 2 renders (9:16 + 16:9) | 77.4s compute | Local Compute |

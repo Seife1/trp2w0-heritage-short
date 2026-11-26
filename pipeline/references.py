@@ -61,13 +61,13 @@ def ensure_visual_tokens() -> bool:
         w, h = img.size
 
         crops = {
-            "token_kaleb": (0, 0, int(w * 0.25), int(h * 0.57)),
-            "token_ato_berhanu": (int(w * 0.25), 0, int(w * 0.50), int(h * 0.57)),
-            "token_doma": (int(w * 0.50), 0, int(w * 0.74), int(h * 0.57)),
-            "token_injured_palm": (int(w * 0.74), 0, w, int(h * 0.57)),
-            "token_landscape": (0, int(h * 0.57), int(w * 0.36), h),
-            "token_rural_house": (int(w * 0.36), int(h * 0.57), int(w * 0.68), h),
-            "token_acacia_tree": (int(w * 0.68), int(h * 0.57), w, h),
+            "token_kaleb": (0, 0, int(w * 0.25), int(h * 0.495)),
+            "token_ato_berhanu": (int(w * 0.25), 0, int(w * 0.50), int(h * 0.495)),
+            "token_doma": (int(w * 0.50), 0, int(w * 0.74), int(h * 0.495)),
+            "token_injured_palm": (int(w * 0.74), 0, w, int(h * 0.495)),
+            "token_landscape": (0, int(h * 0.57), int(w * 0.36), int(h * 0.94)),
+            "token_rural_house": (int(w * 0.36), int(h * 0.57), int(w * 0.68), int(h * 0.94)),
+            "token_acacia_tree": (int(w * 0.68), int(h * 0.57), w, int(h * 0.94)),
         }
 
         for name, box in crops.items():

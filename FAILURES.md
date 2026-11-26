@@ -162,3 +162,44 @@ Documenting blockers, root cause investigations, attempted fixes, and final veri
   - Alternatively, run `python run.py --force` to bypass cache entirely for one pass, then re-enable caching.
 - **Preventative Measure:**
   - Embed a **hash format version prefix** (e.g. `v2:sha256:...`) inside every `.hash` file. Any change to the hash function increments the prefix version; `compute_keyframe_hash()` treats a version mismatch as a cache miss, automatically invalidating all stale entries without requiring manual deletion.
+
+---
+
+### Failure 09: Reference Token Caption Bars Leaking Garbled Text into Generated Keyframes
+- **Timestamp:** 2026-11-26 10:15 EAT
+- **Stage / Subsystem:** `pipeline/references.py` → `pipeline/keyframes.py` (FLUX.2 klein 4B image conditioning)
+- **Error / Blocker Description:**
+  Generated keyframes contained garbled or partial text artefacts (distorted versions of "Kaleb", "Ato Berhanu", etc.) burned into the image, despite no text instructions in the prompt requesting text rendering.
+- **Root Cause Analysis:**
+  The 7 visual reference token crops extracted from `character_assets_sheet.jpg` included the bottom caption bars (e.g., "Kaleb\n(17-year-old Ethiopian Farmer)"). When these tokens were passed as `input_image_0..3` to the FLUX.2 klein 4B model, the diffusion model treated the caption text as visual content to reproduce, generating corrupted approximations of the label text in the output images.
+- **Attempts Made:**
+  1. *Attempt 1:* Added `"No text, no watermarks, no labels"` to prompts → reduced but did not eliminate text artefacts, since the model still received the caption pixels as conditioning input.
+  2. *Attempt 2:* Cropped token images to exclude the bottom caption bar.
+- **Final Resolution / Workaround:**
+  - Updated crop coordinates in `references.py` to strip the bottom ~13% (caption region) from all 7 tokens:
+    - Portrait tokens: bottom boundary from `h * 0.57` → `h * 0.495` (256×338 px, was 256×388).
+    - Landscape tokens: bottom boundary from `h` → `h * 0.94` (368×252 px, was 368×294).
+  - Regenerated all 9 keyframes with clean (caption-free) token crops → zero text artefacts in output.
+- **Preventative Measure:**
+  - When extracting reference tokens from composite sheets, always verify that the crop region excludes annotations, labels, watermarks, and caption bars. Add a visual inspection step to the token extraction workflow. Consider automated OCR scanning of token crops to flag residual text before passing to image-conditioned generators.
+
+---
+
+### Failure 10: Persistent Doma Axe/Adze Shape Confusion (Model Prior vs. Prompt Engineering)
+- **Timestamp:** 2026-11-26 10:30 EAT
+- **Stage / Subsystem:** `pipeline/keyframes.py` — All doma-involving shots (02, 03, 04, 07, 08, 09)
+- **Error / Blocker Description:**
+  The Ethiopian *doma* (a traditional adze with a flat horizontal iron blade perpendicular to the handle) was consistently rendered as a vertical axe head, pickaxe point, or wedge — standard Western tool shapes the model has seen far more frequently in training data.
+- **Root Cause Analysis:**
+  The diffusion model's training distribution overwhelmingly associates "tool", "pickaxe", "digging implement" with vertically-oriented axe/pickaxe shapes. Even with a visual reference token of the actual doma blade, the text prior ("pickaxe" or "digging tool") dominates the conditioning signal, overriding the reference image's flat horizontal blade shape. This is a fundamental **text-prior dominance over image-conditioning** limitation in current text-to-image architectures.
+- **Attempts Made:**
+  1. *Attempt 1:* Described doma as "pickaxe" → rendered as a standard Western pickaxe with pointed head.
+  2. *Attempt 2:* Described as "traditional Ethiopian doma tool" → rendered as a generic axe.
+  3. *Attempt 3:* Added explicit veto clauses: `"flat iron adze blade (NOT an axe head, NOT a wedge, NOT a pickaxe point)"` → partially effective. Shots 04 and 07 now render a flat horizontal blade. Shots 08 and 09 still show a smaller but more acceptable blade shape.
+- **Final Resolution / Workaround:**
+  - Adopted the veto-clause prompt engineering pattern across all 6 doma-involving shots as the best available mitigation.
+  - Accepted that shots 08 and 09 show a slightly non-ideal but tolerable blade shape, as the diminishing returns of further prompt iteration do not justify additional API quota spend.
+- **Impact on Output:**
+  The doma is visually "close enough" in all final shots — no shot shows a clearly wrong Western axe head after the prompt fixes — but perfect pixel accuracy for a culturally specific tool unseen in training data remains out of reach with current text-to-image models.
+- **Preventative Measure / Research Insight:**
+  For culturally specific objects with no representation in Western-centric training data, the most effective strategy is a combination of: (1) explicit veto clauses negating the dominant prior, (2) reference image conditioning, and (3) textual description of the object's geometry. Document this as a known ceiling in `REPORT.md`. Future work: fine-tuning or LoRA training on Ethiopian tool imagery.
