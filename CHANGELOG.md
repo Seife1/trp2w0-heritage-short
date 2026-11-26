@@ -17,6 +17,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Synchronized architectural documentation across `ARCHITECTURE.md`, `README.md`, `ETHICS.md`, `REPORT.md`, and added Failure 11 to `FAILURES.md` detailing the replacement of planned ACE-Step with culturally authentic procedural physical modeling.
   - Added `test_music_contract_and_determinism` to automated test suite (9/9 passed).
 
+## [0.2.4] - 2026-11-26
+
+### Fixed
+- **Fail-Fast Curation (`pipeline/curate.py`):** Changed `continue` on missing keyframe sources to `return False` with actionable error message, preventing silent incomplete curation sets.
+- **End Card Attribution (`pipeline/assemble.py`):** Corrected AI disclosure text from "FLUX.1 schnell & Leonardo AI Phoenix" to "FLUX.2 klein 4B (Cloudflare Workers AI)" to match the actual production model.
+- **Audio Truncation Warning (`pipeline/assemble.py`):** `pad_shot_audio()` now emits a `[WARNING]` to stderr when narration speech exceeds the target shot duration, instead of silently truncating.
+- **True Peak Compliance (`pipeline/assemble.py`):** Tightened `alimiter` limit from `0.891` (-1.0 dBFS) to `0.794` (-2.0 dBFS pre-AAC) to guarantee True Peak ≤ -1.0 dBFS after AAC encoding overshoot. Re-mastered both final cuts.
+- **Wan Mode File Copy (`pipeline/shots.py`):** Wan 2.2 mode now transcodes the remote clip to the target aspect ratio and frame rate via FFmpeg instead of incrementing success count without producing the output file.
+- **Pipeline Completeness (`run.py`):** Wired missing `references` and `keyframes` stages; `shots` stage now renders both 9:16 and 16:9 aspect ratios to match what mastering expects.
+
+### Changed
+- **Dependencies (`requirements.txt`):** Added missing runtime deps (`numpy`, `scipy`, `Pillow`) and dev dep (`pytest`) with pinned version ranges.
+- **Documentation:** Updated `DESIGN.md` True Peak measurement, `CHANGELOG.md` v0.2.1 model names, and `README.md` version badge and changelog. Added Experiment 16 to `EXPERIMENTS.md`.
+- **Test Suite:** Added `test_curate_fails_on_missing_source` to automated tests (10/10 passing).
+
 ## [0.2.2] - 2026-11-26
 
 ### Changed
@@ -50,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added stage filtering (`--stage {schema,narration,music,curate,shots,master}`) and aspect targeting (`--aspect {9:16,16:9,both}`).
 - **Two-Pass -14 LUFS Loudness Mastering & AI Disclosure End Card (`pipeline/assemble.py --master`):**
   - Implemented EBU R128 / ITU-R BS.1770 compliant two-pass mastering with true-peak limiting (`-14.0 LUFS` integrated, `True Peak <= -1.0 dBFS`, `LRA = 5.6 LU`).
-  - Synthesized a 2.5s Ethical AI Disclosure End Card rendered with DirectWrite `Nyala` typography highlighting generative AI models used (FLUX.1 schnell, Leonardo Phoenix, Gemini Flash TTS, and acoustic instrument synthesis).
+  - Synthesized a 2.5s Ethical AI Disclosure End Card rendered with DirectWrite `Nyala` typography highlighting generative AI models used (FLUX.2 klein 4B, Gemini Flash TTS, and acoustic instrument synthesis).
   - Delivered final production master MP4s conforming strictly to the 60.0–90.0s challenge contract:
     - Vertical Master (`9:16`, 1080x1920): `outputs/final/final_master_9_16.mp4` (11.18 MB, 68.11s)
     - Horizontal Master (`16:9`, 1920x1080): `outputs/final/final_master_16_9.mp4` (10.27 MB, 68.11s)

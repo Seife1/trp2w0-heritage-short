@@ -153,3 +153,18 @@ def test_dry_run_cli_entrypoint():
     res = subprocess.run(cmd, cwd=str(PROJECT_ROOT), capture_output=True, text=True)
     assert res.returncode == 0, f"Dry-run failed: {res.stderr}"
     assert "Dry-run passed" in res.stdout
+
+
+def test_curation_manifest_and_failfast():
+    """Verify curation manifest exists with klein mappings and curate fails fast on missing source."""
+    from pipeline.curate import CURATED_DIR, assemble_curated_keyframes, CURATION_MAP
+    manifest_path = CURATED_DIR / "curation_manifest.json"
+    assert manifest_path.exists(), "curation_manifest.json must exist"
+
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        manifest = json.load(f)
+
+    assert len(manifest) == 9, "Curated manifest must contain all 9 shots"
+    for shot_id, info in manifest.items():
+        assert "FLUX.2" in info["model"], f"{shot_id} must use promoted FLUX.2 klein model"
+        assert (CURATED_DIR / f"{shot_id}.png").exists(), f"Curated keyframe {shot_id}.png must exist"

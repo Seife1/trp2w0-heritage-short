@@ -159,6 +159,10 @@ def pad_shot_audio(shot_id: str, target_duration_s: float, out_path: Path) -> bo
 
     # Truncate or zero-pad to exact sample count
     if len(padded_frames) > target_total_bytes:
+        overflow_s = speech_dur - target_duration_s
+        if overflow_s > 0:
+            print(f"[WARNING] {shot_id}: speech ({speech_dur:.2f}s) exceeds target ({target_duration_s:.2f}s) "
+                  f"by {overflow_s:.2f}s — audio will be truncated!", file=sys.stderr)
         padded_frames = padded_frames[:target_total_bytes]
     elif len(padded_frames) < target_total_bytes:
         padded_frames += b"\x00" * (target_total_bytes - len(padded_frames))
@@ -396,7 +400,7 @@ Style: SubStyle,Nyala,{sub_size},&H00AAAAAA,&H000000FF,&H00000000,&H80000000,0,0
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 Dialogue: 0,{st},{et},TitleStyle,,0,0,0,,\"የማያውቁት ነገር ላብ ያበረክታል\"\\N{{\\fs{title_size-14}\\c&H00D4AF37&}}\"What one does not know brings much sweat and toil.\"
 Dialogue: 0,{st},{et},BodyStyle,,0,0,0,,\\N\\N\\N\\NCreated with AI for Cultural & Educational Preservation
-Dialogue: 0,{st},{et},SubStyle,,0,0,0,,\\N\\N\\N\\N\\N\\NVisuals: FLUX.1 schnell & Leonardo AI Phoenix\\NNarration: Gemini 3.8 Flash TTS (Charon & Algenib)\\NMusic: Acoustic Ethiopian Synthesis (Krar, Begena, Washint, Kebero)
+Dialogue: 0,{st},{et},SubStyle,,0,0,0,,\\N\\N\\N\\N\\N\\NVisuals: FLUX.2 klein 4B (Cloudflare Workers AI)\\NNarration: Gemini 3.8 Flash TTS (Charon & Algenib)\\NMusic: Acoustic Ethiopian Synthesis (Krar, Begena, Washint, Kebero)
 """
     with open(ass_path, "w", encoding="utf-8") as f:
         f.write(ass_text)
@@ -476,7 +480,7 @@ def master_final(aspect: str = "9:16", target_i: float = -14.0, target_lra: floa
         f"loudnorm=I={target_i}:LRA={target_lra}:tp={target_tp}:"
         f"measured_I={measured_i}:measured_LRA={measured_lra}:measured_tp={measured_tp}:"
         f"measured_thresh={measured_thresh}:offset={target_offset}:linear=true,"
-        f"alimiter=limit=0.891:attack=5:release=50:asc=true:level=false"
+        f"alimiter=limit=0.794:attack=5:release=50:asc=true:level=false"
     )
     pass2_cmd = [
         "ffmpeg", "-y",

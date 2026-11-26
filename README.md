@@ -1,8 +1,8 @@
 # The Heritage Short — AI-Content Generation Pipeline
 
-[![Version](https://img.shields.io/badge/version-v0.2.3-blue.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v0.2.4-blue.svg)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
-[![Tests](https://img.shields.io/badge/tests-9%20passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-10%20passed-brightgreen.svg)]()
 [![Contract](https://img.shields.io/badge/contract-JSON%20Schema%20Draft--07-purple.svg)](./schema/storyboard.schema.json)
 [![Status](https://img.shields.io/badge/status-active%20development-brightgreen.svg)]()
 
@@ -162,7 +162,7 @@ python pipeline/assemble.py --master --aspect 16:9
 | **[`DESIGN.md`](./DESIGN.md)** | Target audience persona, viewing context, and User Tests #1 & #2 logs. |
 | **[`ARCHITECTURE.md`](./ARCHITECTURE.md)** | Stage contracts, caching design, and error recovery workflows. |
 | **[`ETHICS.md`](./ETHICS.md)** | Mandatory consent verification, model licenses, and AI attribution plan. |
-| **[`EXPERIMENTS.md`](./EXPERIMENTS.md)** | 14 hypothesis-driven tests (`Hypothesis -> Change -> Result`). |
+| **[`EXPERIMENTS.md`](./EXPERIMENTS.md)** | 16 hypothesis-driven tests (`Hypothesis -> Change -> Result`). |
 | **[`FAILURES.md`](./FAILURES.md)** | Blocker journal, root cause analysis, and preventative fixes. |
 | **[`COSTS.md`](./COSTS.md)** | Measured latencies, GPU minutes, and commercial cost comparisons. |
 | **[`CHANGELOG.md`](./CHANGELOG.md)** | SemVer release history and unreleased updates. |
@@ -172,6 +172,8 @@ python pipeline/assemble.py --master --aspect 16:9
 ## 📜 Recent Updates
 
 See the full [CHANGELOG.md](./CHANGELOG.md) for detailed release notes.
+
+* **2026-11-26 (v0.2.4):** QA review fixes — fail-fast curation, end card attribution corrected to FLUX.2 klein 4B, True Peak compliance tightened (TP ≤ -1.0 dBFS guaranteed), Wan mode file copy fixed, `run.py` wired `references` + `keyframes` + dual-aspect `shots` stages, added missing deps (`numpy`, `scipy`, `Pillow`, `pytest`), 10/10 tests passing.
 
 * **2026-11-26 (v0.2.3):** Contract-driven music pipeline refactor (`pipeline/music.py`). Dynamically binds cue durations, transition timestamps, and BPMs to `storyboard.json`; introduced PRNG seed management (`--seed 42`) for bit-for-bit deterministic synthesis; updated `ARCHITECTURE.md`, `ETHICS.md`, and `REPORT.md` to accurately document procedural acoustic physical modeling instead of planned ACE-Step; added Failure 11; test suite expanded to 9/9 passing.
 

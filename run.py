@@ -6,9 +6,11 @@ Provides one-command reproducibility for Assignment 1 (20 pts):
 1. Validates storyboard.json against JSON Schema (Draft-07).
 2. Generates line-by-line speech narration with caching (Gemini 3.8 Flash TTS).
 3. Generates/auditions culturally authentic original score (Acoustic Ethiopian synthesis).
-4. Curates winning multi-model keyframes (FLUX.1 schnell + Leonardo Phoenix).
-5. Renders 24fps motion clips with SHA-256 caching (FFmpeg Ken Burns / Wan 2.2).
-6. Masters vertical (9:16) and horizontal (16:9) cuts (-14 LUFS, True Peak <= -1.0 dBFS, 2.5s AI End Card).
+4. Generates visual reference tokens for character conditioning.
+5. Generates keyframes via FLUX.2 klein 4B with image conditioning.
+6. Curates winning multi-model keyframes.
+7. Renders 24fps motion clips in both 9:16 and 16:9 with SHA-256 caching (FFmpeg Ken Burns / Wan 2.2).
+8. Masters vertical (9:16) and horizontal (16:9) cuts (-14 LUFS, True Peak <= -1.0 dBFS, 2.5s AI End Card).
 
 Usage:
     python run.py                   # Run end-to-end production master
@@ -98,7 +100,7 @@ def dry_run():
 
 def run_pipeline(stage_filter: str = None, aspect: str = "both") -> bool:
     """Executes the full end-to-end production pipeline."""
-    total_steps = 6
+    total_steps = 8
 
     # Step 1: Validate Schema
     if stage_filter in (None, "schema"):
@@ -124,25 +126,42 @@ def run_pipeline(stage_filter: str = None, aspect: str = "both") -> bool:
         if stage_filter == "music":
             return True
 
-    # Step 4: Keyframe Curation
+    # Step 4: Generate Visual References & Tokens
+    if stage_filter in (None, "references"):
+        step_banner(4, total_steps, "Generating Visual Reference Tokens")
+        if not run_stage_script([sys.executable, "pipeline/references.py"], "References"):
+            return False
+        if stage_filter == "references":
+            return True
+
+    # Step 5: Generate Keyframes (FLUX.2 klein primary)
+    if stage_filter in (None, "keyframes"):
+        step_banner(5, total_steps, "Generating Keyframes (FLUX.2 klein 4B)")
+        if not run_stage_script([sys.executable, "pipeline/keyframes.py", "--model", "klein"], "Keyframes"):
+            return False
+        if stage_filter == "keyframes":
+            return True
+
+    # Step 6: Keyframe Curation
     if stage_filter in (None, "curate"):
-        step_banner(4, total_steps, "Curating Multi-Model Keyframes (FLUX + Leonardo)")
+        step_banner(6, total_steps, "Curating Multi-Model Keyframes (FLUX.2 klein)")
         if not run_stage_script([sys.executable, "pipeline/curate.py"], "Curation"):
             return False
         if stage_filter == "curate":
             return True
 
-    # Step 5: Render Motion Clips
+    # Step 7: Render Motion Clips (both aspect ratios)
     if stage_filter in (None, "shots"):
-        step_banner(5, total_steps, "Rendering 24fps Dynamic Motion Shots (9:16 and 16:9)")
-        if not run_stage_script([sys.executable, "pipeline/shots.py"], "Motion Shots"):
-            return False
+        step_banner(7, total_steps, "Rendering 24fps Dynamic Motion Shots (9:16 and 16:9)")
+        for asp in ["9:16", "16:9"]:
+            if not run_stage_script([sys.executable, "pipeline/shots.py", "--aspect", asp], f"Motion Shots ({asp})"):
+                return False
         if stage_filter == "shots":
             return True
 
-    # Step 6: Mastering & AI End Card
+    # Step 8: Mastering & AI End Card
     if stage_filter in (None, "master"):
-        step_banner(6, total_steps, "Two-Pass -14 LUFS Mastering & Ethical AI End Card")
+        step_banner(8, total_steps, "Two-Pass -14 LUFS Mastering & Ethical AI End Card")
         aspects_to_run = ["9:16", "16:9"] if aspect == "both" else [aspect]
         for asp in aspects_to_run:
             if not run_stage_script([sys.executable, "pipeline/assemble.py", "--master", "--aspect", asp], f"Master ({asp})"):
@@ -172,8 +191,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="The Heritage Short — Master Production Pipeline")
     parser.add_argument("--dry-run", action="store_true", help="Audit contract and asset health without external calls")
     parser.add_argument("--test", action="store_true", help="Execute the automated pytest validation suite")
-    parser.add_argument("--stage", choices=["schema", "narration", "music", "curate", "shots", "master"], help="Execute only a specific pipeline stage")
-    parser.add_argument("--aspect", choices=["9:16", "16:9", "both"], default="both", help="Target aspect ratio for assembly (default: both)")
+    parser.add_argument("--stage", choices=["schema", "narration", "music", "references", "keyframes", "curate", "shots", "master"], help="Execute only a specific pipeline stage")
+    parser.add_argument("--aspect", choices=["9:16", "16:9", "both"], default="both", help="Target aspect ratio for assembly and shots (default: both)")
 
     args = parser.parse_args()
 

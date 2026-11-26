@@ -301,8 +301,19 @@ def generate_shots(mode: str = "kenburns", aspect: str = "9:16", target_shot: st
         wan_candidate = WAN_DIR / f"{shot_id}.mp4"
         if mode == "wan" and wan_candidate.exists():
             print(f"[{shot_id}] Using remote Wan 2.2 TI2V video: {wan_candidate.name}")
-            # Format to target aspect ratio and fps if needed
-            # For simplicity, copy or symlink
+            # Transcode to target aspect ratio and frame rate
+            wan_cmd = [
+                "ffmpeg", "-y",
+                "-i", str(wan_candidate),
+                "-vf", f"scale={1080 if aspect == '9:16' else 1920}:{1920 if aspect == '9:16' else 1080}:force_original_aspect_ratio=decrease,"
+                       f"pad={1080 if aspect == '9:16' else 1920}:{1920 if aspect == '9:16' else 1080}:(ow-iw)/2:(oh-ih)/2",
+                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "24",
+                "-an", str(out_mp4)
+            ]
+            wan_res = subprocess.run(wan_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+            if wan_res.returncode != 0:
+                print(f"[ERROR] Failed to transcode Wan clip for {shot_id}: {wan_res.stderr[-200:]}", file=sys.stderr)
+                return False
             success_count += 1
             continue
 

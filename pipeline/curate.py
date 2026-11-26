@@ -21,6 +21,7 @@ Curated Selection (v2 — klein promoted to primary for character-critical shots
 """
 
 import json
+import sys
 import shutil
 from pathlib import Path
 from PIL import Image
@@ -93,8 +94,9 @@ def assemble_curated_keyframes():
         dest = CURATED_DIR / f"{shot_id}.png"
 
         if not src.exists():
-            print(f"[ERROR] Source missing for {shot_id}: {src}")
-            continue
+            print(f"[ERROR] Source missing for {shot_id}: {src}", file=sys.stderr)
+            print(f"        Run 'python pipeline/keyframes.py --model klein' to generate keyframes first.", file=sys.stderr)
+            return False
 
         # Standardize format to high-quality PNG
         with Image.open(src) as img:
